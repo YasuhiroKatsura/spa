@@ -1,0 +1,4 @@
+app/node_modules/
+aws/.terraform/
+aws/terraform.lock.hcl
+spa.code-workspace
