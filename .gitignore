@@ -1,4 +1,6 @@
 app/node_modules/
 aws/.terraform/
-aws/terraform.lock.hcl
+aws/.terraform.lock.hcl
+aws/terraform.tfstate
+aws/terraform.tfstate.backup
 spa.code-workspace
