@@ -21,12 +21,6 @@ TFLint version 0.61.0
 + ruleset.terraform (0.14.1-bundled)
 ```
 
-## Terraform初期設定
-[Document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
-```
-PS C:\Users\katsu\OneDrive\デスクトップ\work\spa\aws> terraform init
-```
-
 ## ディレクトリ構成
 ```
 - aws
@@ -46,6 +40,9 @@ xxx
 ## 方針
 - [modules構造の考え方](https://docs.aws.amazon.com/ja_jp/prescriptive-guidance/latest/terraform-aws-provider-best-practices/structure.html#modularity)
 - [基本思想](https://qiita.com/shogomuranushi/items/266f5ef342fb81a7a5cd)
+
+## 参考
+- [Terraform Document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 
 ## TODO
 - [ ] tflint

@@ -1,3 +1,4 @@
+# -----変数定義-----
 variable "common" {}
 variable "vpc" {}
 variable "public_subnets" {}
@@ -82,4 +83,12 @@ resource "aws_route_table_association" "private" {
   for_each       = var.private_subnets
   subnet_id      = aws_subnet.private[each.key].id
   route_table_id = aws_route_table.private[0].id
+}
+
+output "ids" {
+  value = {
+    vpc_id = aws_vpc.this.id
+    public_subnet_ids = [for subnet in aws_subnet.public : subnet.id]
+    private_subnet_ids = [for subnet in aws_subnet.private : subnet.id]
+  }
 }

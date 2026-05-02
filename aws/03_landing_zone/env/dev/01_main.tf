@@ -23,6 +23,7 @@ variable "public_subnets" {
   }
 }
 
+# 使ってない
 variable "private_subnets" {
   type = map(string)
   default = {
@@ -31,6 +32,7 @@ variable "private_subnets" {
   }
 }
 
+# -----Provider定義-----
 provider "aws" {
   region = var.common.region
 }
@@ -42,4 +44,21 @@ module "vpc_spa" {
   vpc = var.vpc
   public_subnets = var.public_subnets
   private_subnets = var.private_subnets
+}
+
+# -----output定義-----
+# output "vpc_id" {
+#   value       = module.vpc_spa.vpc_id
+# }
+
+# output "public_subnet_ids" {
+#   value       = module.vpc_spa.public_subnet_ids
+# }
+
+# output "private_subnet_ids" {
+#   value       = module.vpc_spa.private_subnet_ids
+# }
+
+output "ids" {
+  value = module.vpc_spa.ids
 }
