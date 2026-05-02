@@ -27,10 +27,25 @@ TFLint version 0.61.0
 PS C:\Users\katsu\OneDrive\デスクトップ\work\spa\aws> terraform init
 ```
 
+## ディレクトリ構成
+```
+- aws
+  - modules
+    - network         # 通信の土台（VPC, Subnet, IGW, NATGW, Route Table）
+    - security        # 権限と守り（IAM, Security Group, WAF, KMS）
+    - compute         # 計算リソース（EC2, Auto Scaling, Lambda, EKS）
+    - load_balancer   # トラフィック配分（ALB, NLB）
+    - storage         # データの保存（S3, EFS）
+    - database        # 構造化データ（RDS, Aurora, DynamoDB, ElastiCache）
+    - monitoring      # 監視（CloudWatch, SNS）
+```
+
 ## 構成図
 xxx
 
-
+## 方針
+- [modules構造の考え方](https://docs.aws.amazon.com/ja_jp/prescriptive-guidance/latest/terraform-aws-provider-best-practices/structure.html#modularity)
+- [基本思想](https://qiita.com/shogomuranushi/items/266f5ef342fb81a7a5cd)
 
 ## TODO
 - [ ] tflint
