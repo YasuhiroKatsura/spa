@@ -1,14 +1,16 @@
 stages:
   - test
 
-# 全ジョブ共通のデフォルト設定
 default:
   image: hashicorp/terraform:latest
+  before_script:
+    - echo "Setting up environment for Terraform..."
+    # - apk add --no-cache git # Terraformイメージにはgitがないため、必要に応じて追加
 
-# --- 単体テスト・バリデーションジョブ ---
-terraform_test:
+validate:
   stage: test
   script:
+    - cd terraform/env/dev
     - terraform init -backend=false # HCPに接続せずローカルで構文チェックのみ行う
     - terraform validate
     - terraform fmt -check
