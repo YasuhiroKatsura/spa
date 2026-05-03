@@ -2,14 +2,14 @@
 variable "s3" {
   type = map(string)
   default = {
-    bucket_name= "spa-y-okamura-dev-2026"
+    # bucket_name= "spa-y-okamura-dev-2026"
   }
 }
 
-
 #-----S3バケット-----
 resource "aws_s3_bucket" "spa" {
-  bucket = var.s3.bucket_name
+  # bucket = var.s3.bucket_name
+  bucket = aws_lb.spa.dns_name
 }
 
 resource "aws_s3_bucket_versioning" "spa" {
@@ -48,22 +48,25 @@ resource "aws_vpc_endpoint" "s3_spa" {
   security_group_ids = [aws_security_group.s3_endpoint.id]
 }
 
-
-# -----S3エンドポイントのネットワークインターフェース取得-----
 data "aws_network_interface" "s3_endpoint" {
   id = tolist(aws_vpc_endpoint.s3_spa.network_interface_ids)[0]
 }
 
-# -----S3エンドポイント用セキュリティグループ-----
+# -----security group (S3エンドポイント用)-----
 resource "aws_security_group" "s3_endpoint" {
-  name        = "${var.s3.bucket_name}-s3-endpoint-sg"
+  name        = "${aws_s3_bucket.spa.bucket}-s3-endpoint-sg"
   vpc_id      = data.terraform_remote_state.landing_zone.outputs.ids.vpc_id
 
-  # ALBからのHTTPSを許可
   ingress {
     from_port       = "443"
     to_port         = "443"
     protocol        = "tcp"
     security_groups = [aws_security_group.alb.id]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
