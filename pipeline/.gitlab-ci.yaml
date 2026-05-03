@@ -18,4 +18,5 @@ validate:
     - echo "Running unit tests..."
   rules:
     # マージリクエスト（Merge前）のときのみ実行
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    # - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "web"
