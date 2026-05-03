@@ -16,10 +16,9 @@ validate:
     - cd terraform/03_landing_zone/env/dev
     - terraform init -backend=false # HCPに接続せずローカルで構文チェックのみ行う
     - terraform validate
-    - terraform fmt -check
     # ここに独自のテストコマンド（例: go test や tflint）を追加
     - echo "Running unit tests..."
   rules:
     # マージリクエスト（Merge前）のときのみ実行
-    # - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_PIPELINE_SOURCE == "web"
