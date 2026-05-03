@@ -1,6 +1,14 @@
 # spa
 
-## Requirement
+## Application
+xxx
+
+
+## AWS
+
+### Requirement
+Local環境に以下をインストール
+
 - [aws cli](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/getting-started-install.html)
 - [terraform](https://developer.hashicorp.com/terraform/install)
 - [tflint](https://github.com/terraform-linters/tflint/releases)
@@ -21,30 +29,25 @@ TFLint version 0.61.0
 + ruleset.terraform (0.14.1-bundled)
 ```
 
-## ディレクトリ構成
-```
-- aws
-  - modules
-    - network         # 通信の土台（VPC, Subnet, IGW, NATGW, Route Table）
-    - security        # 権限と守り（IAM, Security Group, WAF, KMS）
-    - compute         # 計算リソース（EC2, Auto Scaling, Lambda, EKS）
-    - load_balancer   # トラフィック配分（ALB, NLB）
-    - storage         # データの保存（S3, EFS）
-    - database        # 構造化データ（RDS, Aurora, DynamoDB, ElastiCache）
-    - monitoring      # 監視（CloudWatch, SNS）
-```
+### 設計方針
+- core instance (storage, loadbalancer, compute, resource-base roleなど), observability (cloud watch, dataaogなど), landing zone (network, scp, control towerなど)の3層に分ける。
+- simple is bestで作る。基本的にmodulesは使わない。ただしlanding zoneは組織全体で共通する設定項目のため例外とし、機能別で実装する。
 
-## 構成図
+### 構成図
 xxx
 
-## 方針
-- [modules構造の考え方](https://docs.aws.amazon.com/ja_jp/prescriptive-guidance/latest/terraform-aws-provider-best-practices/structure.html#modularity)
-- [基本思想](https://qiita.com/shogomuranushi/items/266f5ef342fb81a7a5cd)
 
-## 参考
+## CI/CD
+- ブランチ戦略: Github Flow
+
+
+## その他
+### 参考情報
+- [Terraform設計方針の参考](https://qiita.com/shogomuranushi/items/266f5ef342fb81a7a5cd)
 - [Terraform Document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
+- [Gitlab CICD構文リファレンス](https://docs.gitlab.com/ja-jp/ci/yaml/)
 
-## TODO
+### TODO
 - [ ] tflint
 - [ ] datadog
 - [ ] cost alert
@@ -53,8 +56,10 @@ xxx
 - [ ] セキュアな秘匿情報運用
 - [ ] ブランチ戦略
 - [ ] CI/CD
+- [ ] git hooks
+- [ ] trivy
 - [ ] 単体テスト, 結合テストの自動化
-- [ ] Antigravity
+- [x] Antigravity
 - [ ] snippet
 - [ ] stateをS3で管理（まあローカルでもいいけど）
 - [ ] kafka
