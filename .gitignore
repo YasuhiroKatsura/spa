@@ -24,4 +24,4 @@ terraform/03_landing_zone/env/prd/terraform.tfstate.backup
 
 old/
 
-spa.code-workspace
+spa-infra.code-workspace

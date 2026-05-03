@@ -12,9 +12,8 @@ default:
 validate:
   stage: test
   script:
-    - pwd
-    - ls -a
-    - cd terraform/env/dev
+    - pwd; ls -a
+    - cd terraform/03_landing_zone/env/dev
     - terraform init -backend=false # HCPに接続せずローカルで構文チェックのみ行う
     - terraform validate
     - terraform fmt -check
