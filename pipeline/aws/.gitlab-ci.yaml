@@ -1,0 +1,19 @@
+stages:
+  - test
+
+# 全ジョブ共通のデフォルト設定
+default:
+  image: hashicorp/terraform:latest
+
+# --- 単体テスト・バリデーションジョブ ---
+terraform_test:
+  stage: test
+  script:
+    - terraform init -backend=false # HCPに接続せずローカルで構文チェックのみ行う
+    - terraform validate
+    - terraform fmt -check
+    # ここに独自のテストコマンド（例: go test や tflint）を追加
+    - echo "Running unit tests..."
+  rules:
+    # マージリクエスト（Merge前）のときのみ実行
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
