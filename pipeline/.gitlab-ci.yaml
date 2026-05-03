@@ -5,7 +5,7 @@ default:
   image: hashicorp/terraform:latest
   before_script:
     - echo "Setting up environment for Terraform..."
-    # - apk add --no-cache git # Terraformイメージにはgitがないため、必要に応じて追加
+    - apk add --no-cache git # Terraformイメージにはgitがないため、必要に応じて追加
 
 validate:
   stage: test

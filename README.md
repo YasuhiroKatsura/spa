@@ -1,4 +1,4 @@
-# spa
+# spa-infra
 
 ## Application
 xxx
