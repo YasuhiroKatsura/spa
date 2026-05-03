@@ -1,28 +1,26 @@
-app/node_modules/
+terraform/01_core_infra/env/dev/.terraform/
+terraform/01_core_infra/env/dev/terraform.tfstate
+terraform/01_core_infra/env/dev/terraform.tfstate.backup
 
-aws/01_core_infra/env/dev/.terraform/
-aws/01_core_infra/env/dev/terraform.tfstate
-aws/01_core_infra/env/dev/terraform.tfstate.backup
+terraform/01_core_infra/env/prd/.terraform/
+terraform/01_core_infra/env/prd/terraform.tfstate
+terraform/01_core_infra/env/prd/terraform.tfstate.backup
 
-aws/01_core_infra/env/prd/.terraform/
-aws/01_core_infra/env/prd/terraform.tfstate
-aws/01_core_infra/env/prd/terraform.tfstate.backup
+terraform/02_observability/env/dev/.terraform/
+terraform/02_observability/env/dev/terraform.tfstate
+terraform/02_observability/env/dev/terraform.tfstate.backup
 
-aws/02_observability/env/dev/.terraform/
-aws/02_observability/env/dev/terraform.tfstate
-aws/02_observability/env/dev/terraform.tfstate.backup
+terraform/02_observability/env/prd/.terraform/
+terraform/02_observability/env/prd/terraform.tfstate
+terraform/02_observability/env/prd/terraform.tfstate.backup
 
-aws/02_observability/env/prd/.terraform/
-aws/02_observability/env/prd/terraform.tfstate
-aws/02_observability/env/prd/terraform.tfstate.backup
+terraform/03_landing_zone/env/dev/.terraform/
+terraform/03_landing_zone/env/dev/terraform.tfstate
+terraform/03_landing_zone/env/dev/terraform.tfstate.backup
 
-aws/03_landing_zone/env/dev/.terraform/
-aws/03_landing_zone/env/dev/terraform.tfstate
-aws/03_landing_zone/env/dev/terraform.tfstate.backup
-
-aws/03_landing_zone/env/prd/.terraform/
-aws/03_landing_zone/env/prd/terraform.tfstate
-aws/03_landing_zone/env/prd/terraform.tfstate.backup
+terraform/03_landing_zone/env/prd/.terraform/
+terraform/03_landing_zone/env/prd/terraform.tfstate
+terraform/03_landing_zone/env/prd/terraform.tfstate.backup
 
 old/
 
