@@ -94,6 +94,7 @@ xxx
   - [ ] Local端末でのセキュアな秘匿情報運用
   - [ ] Control Towerのプロトタイプ実装
   - [ ] IAM User, IAM GroupのTerraform管理
+  - [ ] ALB, API GatewayへのAAL証明書導入 (ACM)
 - テスト
   - [ ] Datadogでシステム外結合テストを実装
 - ドキュメント運用
