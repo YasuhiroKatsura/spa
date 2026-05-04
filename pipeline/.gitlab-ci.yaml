@@ -17,3 +17,13 @@ validate_job:
     - pwd; ls -a
   script:
     - terraform --version
+
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト後（Merge前）のみ実行
+      changes:
+        - "terraform/$TARGET_LAYER/**/*"  # 指定されたレイヤーのディレクトリ配下が変更された時だけ実行
+    - if: $CI_PIPELINE_SOURCE == "web" # (テスト用)手動で実行したときのみ実行
+
+  parallel:
+    matrix:
+      - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
