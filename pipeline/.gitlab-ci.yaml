@@ -36,13 +36,14 @@ main_validate_job:
 # -----feature branchのみterraform planを実行-----
 feature_plan_job:
   stage: test
-  variables:
-    TF_IN_AUTOMATION: "true"
-    TF_TOKEN_app_terraform_io: $TF_TOKEN_app_terraform_io
+  # variables:
+  #   TF_IN_AUTOMATION: "true"
+  #   TF_TOKEN_app_terraform_io: $TF_TOKEN_app_terraform_io
   before_script:
     - echo "Adding execute permission to scripts"
     - chmod +x $CI_PROJECT_DIR/pipeline/scripts/*
     - echo "Changing directory to:" $TARGET_LAYER
+    - echo $TF_TOKEN_app_terraform_io
     - pwd; ls -a
     - cd terraform/$TARGET_LAYER/env/dev
 
