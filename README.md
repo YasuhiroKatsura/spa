@@ -59,6 +59,7 @@ xxx
   - [ ] API GWのプロトタイプ実装
   - [ ] ECS/Fargateのプロトタイプ実装
   - [ ] Auroraのプロトタイプ実装
+  - [ ] S3手前のAPNのFQDNを任意に変える (Route53)
 - CI/CD (インフラ)
   - [x] ブランチ戦略
   - [x] Pipelineのプロトタイプ実装 (Gitlab CI/HCP Terraform)
