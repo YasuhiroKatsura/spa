@@ -23,12 +23,11 @@ variable "public_subnets" {
   }
 }
 
-# 使ってない
 variable "private_subnets" {
   type = map(string)
   default = {
-    # "a" = "10.0.2.0/24"
-    # "c" = "10.0.3.0/24"
+    "a" = "10.0.2.0/24"
+    "c" = "10.0.3.0/24"
   }
 }
 
@@ -46,19 +45,7 @@ module "vpc_spa" {
   private_subnets = var.private_subnets
 }
 
-# -----output定義-----
-# output "vpc_id" {
-#   value       = module.vpc_spa.vpc_id
-# }
-
-# output "public_subnet_ids" {
-#   value       = module.vpc_spa.public_subnet_ids
-# }
-
-# output "private_subnet_ids" {
-#   value       = module.vpc_spa.private_subnet_ids
-# }
-
+# -----Output定義-----
 output "ids" {
   value = module.vpc_spa.ids
 }
