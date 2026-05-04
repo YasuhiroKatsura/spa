@@ -1,3 +1,13 @@
+# -----実行環境-----
+terraform {
+  cloud {
+    organization = "okamura"
+    workspaces {
+      name = "03_landing_zone"
+    }
+  }
+}
+
 # -----変数定義-----
 variable "common" {
   type = map(string)
