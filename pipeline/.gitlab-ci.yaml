@@ -17,7 +17,7 @@ validate_job:
   before_script:
     - echo "Changing directory to: $TARGET_LAYER"
     - pwd; ls -a
-    - cd terraform/$TARGET_LAYER/env/dev
+    - cd "terraform/$TARGET_LAYER/env/dev"
 
   script:
     - ./scripts/validate.sh $TARGET_LAYER
