@@ -37,6 +37,8 @@ validate_job:
 # -----feature branchのみterraform planを実行-----
 feature_plan_job:
   stage: test
+  variables:
+    TF_IN_AUTOMATION: "true"
   before_script:
     - echo "Adding execute permission to scripts"
     - chmod +x $CI_PROJECT_DIR/pipeline/scripts/*
