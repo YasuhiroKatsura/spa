@@ -1,3 +1,8 @@
+variables:
+  LAYER_01: "01_core_infra"
+  LAYER_02: "02_observability"
+  LAYER_03: "03_landing_zone"
+
 stages:
   - test
 
@@ -5,20 +10,27 @@ default:
   image: 
     name: hashicorp/terraform:latest
     entrypoint: [""]
-  before_script:
-    - echo "Setting up environment for Terraform..."
-    - apk add --no-cache git # Terraformイメージにはgitがないため、必要に応じて追加
 
-validate:
+# -----terraform validate実行用job-----
+validate_job:
   stage: test
-  script:
+  before_script:
+    - echo "Validating Terraform configuration for $TARGET_LAYER"
     - pwd; ls -a
-    - cd terraform/03_landing_zone/env/dev
-    - terraform init -backend=false # HCPに接続せずローカルで構文チェックのみ行う
-    - terraform validate
-    # ここに独自のテストコマンド（例: go test や tflint）を追加
-    - echo "Running unit tests..."
+    - cd terraform/$TARGET_LAYER/env/dev
+
+  script:
+    - ./scripts/validate.sh $TARGET_LAYER
+
+  after_script:
+    - echo "Terraform validation for $TARGET_LAYER completed successfully."
+
   rules:
-    # マージリクエスト（Merge前）のときのみ実行
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_PIPELINE_SOURCE == "web"
+    - changes:
+      - "terraform/$TARGET_LAYER/**/*"  # 指定されたレイヤーのディレクトリ配下が変更された時だけ実行
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト後（Merge前）のみ実行
+    - if: $CI_PIPELINE_SOURCE == "web" # (テスト用)手動で実行したときのみ実行
+
+  parallel:
+    matrix:
+      - TARGET_LAYER: [LAYER_01, LAYER_02, LAYER_03]
