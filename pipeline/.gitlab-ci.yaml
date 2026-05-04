@@ -20,7 +20,7 @@ validate_job:
     - cd terraform/$TARGET_LAYER/env/dev
 
   script:
-    - ./scripts/validate.sh $TARGET_LAYER
+    - $CI_PROJECT_DIR/scripts/validate.sh $TARGET_LAYER
 
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト後（Merge前）のみ実行
