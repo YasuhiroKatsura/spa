@@ -63,7 +63,8 @@ xxx
   - [x] ブランチ戦略
   - [x] Pipelineのプロトタイプ実装 (Gitlab CI/HCP Terraform)
   - [x] stateをHCP Terraformで管理
-  - [ ] エラーハンドリング (scriptがこけたら止める)
+  - [x] エラーハンドリング (scriptがこけたら止める)
+  - [ ] mainブランチ以外、git commitをトリガに実行されないようにする
   - [ ] CI/CD関連のIAM設定をterraformで実装
   - [ ] HCP Terraform設定をterraformで実装
   - [ ] 01/02/03の各レイヤでのCI/CD実装
@@ -92,5 +93,6 @@ xxx
   - [x] terraformのディレクトリ構成, 方針の検討
   - [x] Antigravity
   - [ ] terraform provider Vup運用の検討
+  - [ ] mainに直接commitできないようにする
 - ガバナンス
   - [ ] ライセンス保護
