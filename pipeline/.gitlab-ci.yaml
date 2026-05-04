@@ -15,7 +15,8 @@ default:
 validate_job:
   stage: test
   before_script:
-    - echo "Changing directory to: $TARGET_LAYER"
+    # - echo "Changing directory to: $TARGET_LAYER"
+    - echo "Changing directory to: xxx"
     - pwd; ls -a
     - cd "terraform/$TARGET_LAYER/env/dev"
 
@@ -23,9 +24,9 @@ validate_job:
     - ./scripts/validate.sh $TARGET_LAYER
 
   rules:
-    - changes:
-      - "terraform/$TARGET_LAYER/**/*"  # 指定されたレイヤーのディレクトリ配下が変更された時だけ実行
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト後（Merge前）のみ実行
+      changes:
+        - "terraform/$TARGET_LAYER/**/*"  # 指定されたレイヤーのディレクトリ配下が変更された時だけ実行
     - if: $CI_PIPELINE_SOURCE == "web" # (テスト用)手動で実行したときのみ実行
 
   parallel:
