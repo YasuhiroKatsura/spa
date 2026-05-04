@@ -100,7 +100,8 @@ xxx
 - 開発
   - [x] terraformのディレクトリ構成, 方針の検討
   - [x] Antigravity
+  - [ ] o1_core_infra, 02_observability, 数字が逆のほうがdeployの順序性がわかりやすい？
   - [ ] terraform provider Vup運用の検討
-  - [ ] mainに直接commitできないようにする
+  - [x] mainに直接pushできないようにする
 - ガバナンス
   - [ ] ライセンス保護
