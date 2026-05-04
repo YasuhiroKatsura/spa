@@ -27,7 +27,7 @@ validate_job:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト後（Merge前）のみ実行
       changes:
-        - "terraform/$TARGET_LAYER/*"  # 指定されたレイヤーのディレクトリ配下が変更された時だけ実行
+        - "terraform/$TARGET_LAYER/**/*"  # 指定されたレイヤーのディレクトリ配下が変更された時だけ実行
     - if: $CI_PIPELINE_SOURCE == "web" # (テスト用)手動で実行したときのみ実行
 
   parallel:
@@ -52,7 +52,7 @@ feature_plan_job:
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^feature\//'
       changes:
-        - "terraform/$TARGET_LAYER/*"  # 指定されたレイヤーのディレクトリ配下が変更された時だけ実行
+        - "terraform/$TARGET_LAYER/**/*"  # 指定されたレイヤーのディレクトリ配下が変更された時だけ実行
 
   parallel:
     matrix:
