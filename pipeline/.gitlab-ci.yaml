@@ -14,7 +14,7 @@ default:
 validate_job:
   stage: test
   before_script:
-    - echo "Changing directory to: $TARGET_LAYER"
+    - echo "Changing directory to:" $TARGET_LAYER
     - pwd; ls -a
   script:
     - terraform --version
