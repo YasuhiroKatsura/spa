@@ -38,17 +38,17 @@ variable "private_subnets" {
 # -----実行環境-----
 terraform {
   cloud {
-    organization = var.common.tfc_organization
+    organization = "okamura"
     workspaces {
-      name = var.common.tfc_workspace
+      name = "03_landing_zone"
     }
   }
 }
 
 # -----Provider定義-----
-provider "aws" {
-  region = var.common.region
-}
+# provider "aws" {
+#   region = var.common.region
+# }
 
 # -----module呼び出し-----
 module "vpc_spa" {
