@@ -89,3 +89,6 @@ xxx
 - 開発
   - [x] terraformのディレクトリ構成, 方針の検討
   - [x] Antigravity
+  - [ ] terraform provider Vup運用の検討
+- ガバナンス
+  - [ ] ライセンス保護
