@@ -1,9 +1,5 @@
 # spa-infra
 
-## Application
-xxx
-
-
 ## AWS
 
 ### Requirement
