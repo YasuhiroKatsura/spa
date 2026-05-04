@@ -15,12 +15,14 @@ default:
 validate_job:
   stage: test
   before_script:
+    - echo "Adding execute permission to scripts"
+    - chmod +x $CI_PROJECT_DIR/scripts/*
     - echo "Changing directory to:" $TARGET_LAYER
     - pwd; ls -a
     - cd terraform/$TARGET_LAYER/env/dev
 
   script:
-    - $CI_PROJECT_DIR/pipeline/scripts/validate.sh $TARGET_LAYER
+    - $CI_PROJECT_DIR/scripts/validate.sh $TARGET_LAYER
 
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト後（Merge前）のみ実行
