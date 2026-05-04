@@ -52,7 +52,7 @@ xxx
 - システム
   - [x] VPCのプロトタイプ実装
   - [x] ALB-S3のプロトタイプ実装
-  - [ ] API GWのプロトタイプ実装
+  - [x] API GWのプロトタイプ実装
   - [ ] ECS/Fargateのプロトタイプ実装
   - [ ] Auroraのプロトタイプ実装
   - [ ] S3手前のAPNのFQDNを任意に変える (Route53)
@@ -62,9 +62,9 @@ xxx
   - [x] stateをHCP Terraformで管理
   - [x] エラーハンドリング (scriptがこけたら止める)
   - [x] mainブランチ以外、git commitをトリガに実行されないようにする
-  - [ ] featureへのpushをトリガにterraform planする
-  - [ ] CI/CD関連のIAM設定をterraformで実装
-  - [ ] HCP Terraform設定をterraformで実装
+  - [x] featureへのpushをトリガにterraform planする
+  - [ ] featureの自動planをやめ、planまではLocalで行うように実装する
+  - [ ] HCP Terraform設定をtfファイルで管理
   - [x] 01/02/03の各レイヤでのCI/CD実装
   - [ ] CDは並列実行されず、03→02→01の順序でapplyされるように実装する
   - [ ] terraform plan結果の保存
@@ -85,13 +85,14 @@ xxx
   - [ ] ログ保管の実装
   - [ ] cost alertの導入
 - セキュリティ
+  - [ ] CI/CD関連のIAM設定をterraformで実装(03/module/tfc_role)
   - [ ] Cognitoの導入
   - [ ] AD, ADFS (on EC2) の導入
   - [ ] API GatewayへのJWT Authorizor導入
   - [ ] Local端末でのセキュアな秘匿情報運用
   - [ ] Control Towerのプロトタイプ実装
   - [ ] IAM User, IAM GroupのTerraform管理
-  - [ ] ALB, API GatewayへのAAL証明書導入 (ACM)
+  - [ ] ALB, API GatewayへのSSL証明書導入 (ACM)
 - テスト
   - [ ] Datadogでシステム外結合テストを実装
 - ドキュメント運用
