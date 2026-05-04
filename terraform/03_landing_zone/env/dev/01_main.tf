@@ -47,8 +47,8 @@ provider "aws" {
 }
 
 # -----module呼び出し-----
-module "vpc_spa" {
-  source = "../../modules/vpc"
+module "base_network_spa" {
+  source = "../../modules/base_network"
   common = var.common
   vpc = var.vpc
   public_subnets = var.public_subnets
@@ -57,5 +57,5 @@ module "vpc_spa" {
 
 # -----Output定義-----
 output "ids" {
-  value = module.vpc_spa.ids
+  value = module.base_network_spa.ids
 }
