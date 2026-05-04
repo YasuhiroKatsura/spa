@@ -24,9 +24,15 @@ provider "aws" {
 
 # -----tfstateの読み込み-----
 data "terraform_remote_state" "landing_zone" {
-  backend = "local"
+  backend = "remote"
 
   config = {
-    path = "../../../03_landing_zone/env/dev/terraform.tfstate"
+    # あなたのOrganization名
+    organization = "okamura" 
+
+    # 参照したい先のWorkspace名
+    workspaces = {
+      name = "03_landing_zone" 
+    }
   }
 }
