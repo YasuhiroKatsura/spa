@@ -1,4 +1,3 @@
-
 # -----変数定義-----
 variable "common" {
   type = map(string)
@@ -38,17 +37,17 @@ variable "private_subnets" {
 # -----実行環境-----
 terraform {
   cloud {
-    organization = "okamura"
+    organization = var.common.tfc_organization
     workspaces {
-      name = "03_landing_zone"
+      name = var.common.tfc_workspace
     }
   }
 }
 
 # -----Provider定義-----
-# provider "aws" {
-#   region = var.common.region
-# }
+provider "aws" {
+  region = var.common.region
+}
 
 # -----module呼び出し-----
 module "vpc_spa" {
