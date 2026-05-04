@@ -70,6 +70,9 @@ xxx
   - [ ] tflint, terraform fmt -checkを実装
   - [ ] 単体テスト, システム内結合テストを実装
   - [ ] git hooksの実装, CI/CDとどのように組み合わせるか検討
+  - [ ] マージリクエストが拒否された場合に後続処理を止める
+  - [ ] TFCのrunがこけた場合やdiscardされた場合にterraformを戻す。
+  - [ ] TFCのrunがこけた場合やdiscardされた場合にgitlab mainブランチを戻す。
   - [ ] 脆弱性スキャンを実装 (trivyが使えるか検討)
   - [ ] READMEの自動更新を実装
 - 監視運用
