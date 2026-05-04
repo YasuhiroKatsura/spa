@@ -53,18 +53,36 @@ xxx
 - [Gitlab CICD構文リファレンス](https://docs.gitlab.com/ja-jp/ci/yaml/)
 
 ### TODO
-- [ ] tflint
-- [ ] datadog
-- [ ] cost alert
-- [ ] gemini assistant (agent mode) or copilot
-- [ ] draw.ioで構成図を書かせる (AWSアイコン利用)
-- [ ] セキュアな秘匿情報運用
-- [ ] ブランチ戦略
-- [ ] CI/CD
-- [ ] git hooks
-- [ ] trivy
-- [ ] 単体テスト, 結合テストの自動化
-- [x] Antigravity
-- [ ] snippet
-- [ ] stateをS3で管理（まあローカルでもいいけど）
-- [ ] kafka
+- システム
+  - [x] VPCのプロトタイプ実装
+  - [x] ALB-S3のプロトタイプ実装
+  - [ ] API GWのプロトタイプ実装
+  - [ ] ECS/Fargateのプロトタイプ実装
+  - [ ] Auroraのプロトタイプ実装
+- CI/CD
+  - [x] ブランチ戦略
+  - [x] Pipelineのプロトタイプ実装 (Gitlab CI/HCP Terraform)
+  - [x] stateをHCP Terraformで管理
+  - [ ] CI/CD関連のIAM設定をterraformで実装
+  - [ ] HCP Terraform設定をterraformで実装
+  - [ ] 01/02/03の各レイヤでのCI/CD実装
+  - [ ] terraform plan結果の保存
+  - [ ] tflint, terraform fmt -checkを実装
+  - [ ] 単体テスト, システム内結合テストを実装
+  - [ ] git hooksの実装, CI/CDとどのように組み合わせるか検討
+  - [ ] 脆弱性スキャンを実装 (trivyが使えるか検討)
+  - [ ] READMEの自動更新を実装
+- 監視運用
+  - [ ] Datadogの導入
+  - [ ] cost alertの導入
+- セキュリティ
+  - [ ] Local端末でのセキュアな秘匿情報運用
+  - [ ] Control Towerのプロトタイプ実装
+  - [ ] IAM User, IAM GroupのTerraform管理
+- テスト
+  - [ ] Datadogでシステム外結合テストを実装
+- ドキュメント運用
+  - [ ] AIにdraw.ioで構成図を書かせる
+- 開発
+  - [x] terraformのディレクトリ構成, 方針の検討
+  - [x] Antigravity
