@@ -11,12 +11,10 @@ default:
     name: hashicorp/terraform:latest
     entrypoint: [""]
 
-# -----terraform validate実行用job-----
 validate_job:
   stage: test
   before_script:
-    # - echo "Changing directory to: $TARGET_LAYER"
-    - echo "Changing directory to: xxx"
+    - echo "Changing directory to: xxx" # $TARGET_LAYER
     - pwd; ls -a
     - cd "terraform/$TARGET_LAYER/env/dev"
 
