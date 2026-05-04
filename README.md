@@ -88,6 +88,9 @@ xxx
   - [ ] ログ保管の実装
   - [ ] cost alertの導入
 - セキュリティ
+  - [ ] Cognitoの導入
+  - [ ] AD, ADFS (on EC2) の導入
+  - [ ] API GatewayへのJWT Authorizor導入
   - [ ] Local端末でのセキュアな秘匿情報運用
   - [ ] Control Towerのプロトタイプ実装
   - [ ] IAM User, IAM GroupのTerraform管理
