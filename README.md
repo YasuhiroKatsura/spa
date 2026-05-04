@@ -62,6 +62,7 @@ xxx
   - [x] stateをHCP Terraformで管理
   - [x] エラーハンドリング (scriptがこけたら止める)
   - [x] mainブランチ以外、git commitをトリガに実行されないようにする
+  - [ ] featureへのpushをトリガにterraform planする
   - [ ] CI/CD関連のIAM設定をterraformで実装
   - [ ] HCP Terraform設定をterraformで実装
   - [x] 01/02/03の各レイヤでのCI/CD実装
