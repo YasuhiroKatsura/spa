@@ -18,11 +18,11 @@ Local環境に以下をインストール
 aws-cli/2.33.12 Python/3.13.11 Windows/11 exe/AMD64
 
 > terraform -v
-Terraform v1.14.3
+Terraform v1.15.1
 on windows_amd64
 
 Your version of Terraform is out of date! The latest version
-is 1.14.5. You can update by downloading from https://developer.hashicorp.com/terraform/install
+is 1.15.1. You can update by downloading from https://developer.hashicorp.com/terraform/install
 
 > tflint -v
 TFLint version 0.61.0

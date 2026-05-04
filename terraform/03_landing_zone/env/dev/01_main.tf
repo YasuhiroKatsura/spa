@@ -33,12 +33,11 @@ variable "public_subnets" {
   }
 }
 
-# 使ってない
 variable "private_subnets" {
   type = map(string)
   default = {
-    # "a" = "10.0.2.0/24"
-    # "c" = "10.0.3.0/24"
+    "a" = "10.0.2.0/24"
+    "c" = "10.0.3.0/24"
   }
 }
 
@@ -48,27 +47,15 @@ provider "aws" {
 }
 
 # -----module呼び出し-----
-module "vpc_spa" {
-  source = "../../modules/vpc"
+module "base_network_spa" {
+  source = "../../modules/base_network"
   common = var.common
   vpc = var.vpc
   public_subnets = var.public_subnets
   private_subnets = var.private_subnets
 }
 
-# -----output定義-----
-# output "vpc_id" {
-#   value       = module.vpc_spa.vpc_id
-# }
-
-# output "public_subnet_ids" {
-#   value       = module.vpc_spa.public_subnet_ids
-# }
-
-# output "private_subnet_ids" {
-#   value       = module.vpc_spa.private_subnet_ids
-# }
-
+# -----Output定義-----
 output "ids" {
-  value = module.vpc_spa.ids
+  value = module.base_network_spa.ids
 }
