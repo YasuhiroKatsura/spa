@@ -1,4 +1,5 @@
 variables:
+  AWS_ENV: "dev"
   LAYER_01: "01_core_infra"
   LAYER_02: "02_observability"
   LAYER_03: "03_landing_zone"
@@ -11,23 +12,19 @@ default:
     name: hashicorp/terraform:latest
     entrypoint: [""]
 
+before_script:
+  - echo "Adding execute permission to scripts"
+  - chmod +x $CI_PROJECT_DIR/pipeline/scripts/*
+
 # -----main branchのみ: terraform validateを実行-----
 main_validate_job:
   stage: test
-  before_script:
-    - echo "Adding execute permission to scripts"
-    - chmod +x $CI_PROJECT_DIR/pipeline/scripts/*
-    - echo "Changing directory to:" $TARGET_LAYER
-    - pwd; ls -a
-    - cd terraform/$TARGET_LAYER/env/dev
 
   script:
-    - $CI_PROJECT_DIR/pipeline/scripts/validate.sh $TARGET_LAYER
+    - $CI_PROJECT_DIR/pipeline/scripts/validate.sh $AWS_ENV $TARGET_LAYER
 
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト後（Merge前）のみ実行
-      changes:
-        - "terraform/$TARGET_LAYER/**/*"  # 指定されたレイヤーのディレクトリ配下が変更された時だけ実行
 
   parallel:
     matrix:
@@ -36,16 +33,9 @@ main_validate_job:
 # -----feature branchのみterraform planを実行-----
 feature_plan_job:
   stage: test
-  before_script:
-    - echo "Adding execute permission to scripts"
-    - chmod +x $CI_PROJECT_DIR/pipeline/scripts/*
-    - echo "Changing directory to:" $TARGET_LAYER
-    - echo $TF_TOKEN_app_terraform_io
-    - pwd; ls -a
-    - cd terraform/$TARGET_LAYER/env/dev
 
   script:
-    - $CI_PROJECT_DIR/pipeline/scripts/feature_plan.sh $TARGET_LAYER
+    - $CI_PROJECT_DIR/pipeline/scripts/feature_plan.sh $AWS_ENV $TARGET_LAYER
 
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /^feature\//'

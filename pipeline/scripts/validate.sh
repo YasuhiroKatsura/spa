@@ -2,11 +2,17 @@
 
 set -e # エラー発生時にスクリプトを終了
 
-TARGET_LAYER="$1"
+AWS_ENV="$1"
+TARGET_LAYER="$2"
 
-echo "Validating Terraform configuration for $TARGET_LAYER."
+echo "Changing directory to:" $TARGET_LAYER
+cd terraform/$TARGET_LAYER/env/$AWS_ENV
+pwd; ls -a
 
+echo "Initializing Terraform."
 terraform init -backend=false # HCPに接続せずローカルで構文チェックのみ行う
+
+echo "Validating Terraform configuration."
 terraform validate
 
 echo "Task completed successfully!"
