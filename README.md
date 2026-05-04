@@ -66,6 +66,7 @@ xxx
   - [ ] CI/CD関連のIAM設定をterraformで実装
   - [ ] HCP Terraform設定をterraformで実装
   - [ ] 01/02/03の各レイヤでのCI/CD実装
+  - [ ] CDは並列実行されず、03→02→01の順序でapplyされるように実装する
   - [ ] terraform plan結果の保存
   - [ ] tflint, terraform fmt -checkを実装
   - [ ] 単体テスト, システム内結合テストを実装
