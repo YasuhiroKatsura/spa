@@ -59,15 +59,15 @@ xxx
   - [ ] API GWのプロトタイプ実装
   - [ ] ECS/Fargateのプロトタイプ実装
   - [ ] Auroraのプロトタイプ実装
-- CI/CD
+- CI/CD (インフラ)
   - [x] ブランチ戦略
   - [x] Pipelineのプロトタイプ実装 (Gitlab CI/HCP Terraform)
   - [x] stateをHCP Terraformで管理
   - [x] エラーハンドリング (scriptがこけたら止める)
-  - [ ] mainブランチ以外、git commitをトリガに実行されないようにする
+  - [x] mainブランチ以外、git commitをトリガに実行されないようにする
   - [ ] CI/CD関連のIAM設定をterraformで実装
   - [ ] HCP Terraform設定をterraformで実装
-  - [ ] 01/02/03の各レイヤでのCI/CD実装
+  - [x] 01/02/03の各レイヤでのCI/CD実装
   - [ ] CDは並列実行されず、03→02→01の順序でapplyされるように実装する
   - [ ] terraform plan結果の保存
   - [ ] tflint, terraform fmt -checkを実装
@@ -78,8 +78,13 @@ xxx
   - [ ] TFCのrunがこけた場合やdiscardされた場合にgitlab mainブランチを戻す。
   - [ ] 脆弱性スキャンを実装 (trivyが使えるか検討)
   - [ ] READMEの自動更新を実装
-- 監視運用
+- CI/CD (UI)
+  - [ ] Pipelineのプロトタイプ実装 (Gitlab CI/Code Pipeline)
+- CI/CD (API)
+  - [ ] Pipelineのプロトタイプ実装 (Gitlab CI/Code Pipeline)
+- ログ/監視運用
   - [ ] Datadogの導入
+  - [ ] ログ保管の実装
   - [ ] cost alertの導入
 - セキュリティ
   - [ ] Local端末でのセキュアな秘匿情報運用
