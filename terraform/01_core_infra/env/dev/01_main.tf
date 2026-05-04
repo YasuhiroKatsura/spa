@@ -3,7 +3,7 @@ terraform {
   cloud {
     organization = "okamura"
     workspaces {
-      name = "03_landing_zone"
+      name = "01_core_infra"
     }
   }
 }
