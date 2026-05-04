@@ -63,6 +63,7 @@ xxx
   - [x] ブランチ戦略
   - [x] Pipelineのプロトタイプ実装 (Gitlab CI/HCP Terraform)
   - [x] stateをHCP Terraformで管理
+  - [ ] エラーハンドリング (scriptがこけたら止める)
   - [ ] CI/CD関連のIAM設定をterraformで実装
   - [ ] HCP Terraform設定をterraformで実装
   - [ ] 01/02/03の各レイヤでのCI/CD実装
