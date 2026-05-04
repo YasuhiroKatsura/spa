@@ -11,13 +11,16 @@ default:
     name: hashicorp/terraform:latest
     entrypoint: [""]
 
+# -----terraform validate実行用job-----
 validate_job:
   stage: test
   before_script:
     - echo "Changing directory to:" $TARGET_LAYER
     - pwd; ls -a
+    - cd terraform/$TARGET_LAYER/env/dev
+
   script:
-    - terraform --version
+    - ./scripts/validate.sh $TARGET_LAYER
 
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト後（Merge前）のみ実行
