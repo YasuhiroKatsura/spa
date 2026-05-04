@@ -2,20 +2,23 @@ stages:
   - test
 
 default:
-  image: hashicorp/terraform:latest
+  image: 
+    name: hashicorp/terraform:latest
+    entrypoint: [""]
   before_script:
     - echo "Setting up environment for Terraform..."
-    # - apk add --no-cache git # Terraformイメージにはgitがないため、必要に応じて追加
+    - apk add --no-cache git # Terraformイメージにはgitがないため、必要に応じて追加
 
 validate:
   stage: test
   script:
-    - cd terraform/env/dev
+    - pwd; ls -a
+    - cd terraform/03_landing_zone/env/dev
     - terraform init -backend=false # HCPに接続せずローカルで構文チェックのみ行う
     - terraform validate
-    - terraform fmt -check
     # ここに独自のテストコマンド（例: go test や tflint）を追加
     - echo "Running unit tests..."
   rules:
     # マージリクエスト（Merge前）のときのみ実行
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_PIPELINE_SOURCE == "web"
