@@ -38,8 +38,13 @@ xxx
 
 
 ## CI/CD
-- ブランチ戦略: Github Flow
 
+### 方針
+- ブランチ戦略: Github Flow
+- mainへのマージリクエストをトリガに、以下の2段構成でパイプライン実行する。
+  - CI: 脆弱性スキャン、terraform validate、READMEなどのドキュメント更新
+  - CD: terraform plan, apply
+- terraform plan結果は保存し、手動承認後にapplyする。
 
 ## その他
 ### 参考情報
