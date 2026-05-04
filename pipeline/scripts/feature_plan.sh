@@ -10,9 +10,13 @@ cd terraform/$TARGET_LAYER/env/$AWS_ENV
 pwd; ls -a
 
 echo "Initializing Terraform."
-terraform init -backend=false # HCPに接続せずローカルで構文チェックのみ行う
+terraform init
 
 echo "Validating Terraform configuration."
 terraform validate
+
+echo "Planning Terraform changes."
+# terraform plan -out=tfplan # バイナリに吐き出したほうがいいとは思うがどこに吐き出すか設計してない
+terraform plan
 
 echo "Task completed successfully!"
