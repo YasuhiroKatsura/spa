@@ -1,9 +1,12 @@
+
 # -----変数定義-----
 variable "common" {
   type = map(string)
   default = {
     project_name = "spa"
     region  = "ap-northeast-1"
+    tfc_organization = "okamura"
+    tfc_workspace = "03_landing_zone"
   }
 }
 
@@ -29,6 +32,16 @@ variable "private_subnets" {
   default = {
     # "a" = "10.0.2.0/24"
     # "c" = "10.0.3.0/24"
+  }
+}
+
+# -----実行環境-----
+terraform {
+  cloud {
+    organization = var.common.tfc_organization
+    workspaces {
+      name = var.common.tfc_workspace
+    }
   }
 }
 
