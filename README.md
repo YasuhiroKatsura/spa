@@ -65,17 +65,17 @@ xxx
   - [x] VPCのプロトタイプ実装
   - [x] ALB-S3のプロトタイプ実装
   - [x] API GWのプロトタイプ実装
-  - [ ] ECS/Fargateのプロトタイプ実装
+  - [x] ECS/Fargateのプロトタイプ実装
   - [ ] Auroraのプロトタイプ実装
   - [ ] S3手前のAPNのFQDNを任意に変える (Route53)
+  - [ ] API GatewayのエンドポイントURLを任意に変える
 - CI/CD (インフラ)
   - [x] ブランチ戦略
   - [x] Pipelineのプロトタイプ実装 (Gitlab CI/HCP Terraform)
   - [x] stateをHCP Terraformで管理
   - [x] エラーハンドリング (scriptがこけたら止める)
   - [x] mainブランチ以外、git commitをトリガに実行されないようにする
-  - [x] featureへのpushをトリガにterraform planする
-  - [ ] featureの自動planをやめ、planまではLocalで行うように実装する
+  - [x] featureの自動planをやめ、planまではLocalで行うように実装する
   - [ ] HCP Terraform設定をtfファイルで管理
   - [x] 01/02/03の各レイヤでのCI/CD実装
   - [ ] CDは並列実行されず、03→02→01の順序でapplyされるように実装する
@@ -83,7 +83,7 @@ xxx
   - [ ] tflint, terraform fmt -checkを実装
   - [ ] 単体テスト, システム内結合テストを実装
   - [ ] git hooksの実装, CI/CDとどのように組み合わせるか検討
-  - [ ] マージリクエストが拒否された場合に後続処理を止める
+  - [x] マージリクエストが拒否された場合に後続処理を止める
   - [ ] TFCのrunがこけた場合やdiscardされた場合にterraformを戻す。
   - [ ] TFCのrunがこけた場合やdiscardされた場合にgitlab mainブランチを戻す。
   - [ ] 脆弱性スキャンを実装 (trivyが使えるか検討)
@@ -116,5 +116,6 @@ xxx
   - [ ] terraform provider Vup運用の検討
   - [x] mainに直接pushできないようにする
   - [ ] tfファイル全般の命名規則見直し
+  - [ ] sleep変数(bool)を作り、Taskを0にする、ALB, VCP Endpoint消すなどの節約操作を行う。chore/sleepブランチから操作する。
 - ガバナンス
   - [ ] ライセンス保護
