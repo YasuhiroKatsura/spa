@@ -110,6 +110,7 @@ xxx
 - ドキュメント運用
   - [ ] AIにdraw.ioで構成図を書かせる
 - 開発
+  - [ ] もしかしてTODOってgitlabのissueとかで管理したほうがいい？
   - [x] terraformのディレクトリ構成, 方針の検討
   - [x] Antigravity
   - [ ] o1_core_infra, 02_observability, 数字が逆のほうがdeployの順序性がわかりやすい？
