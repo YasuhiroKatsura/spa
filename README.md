@@ -1,9 +1,5 @@
 # spa-infra
 
-## Application
-xxx
-
-
 ## AWS
 
 ### Requirement
@@ -43,8 +39,20 @@ xxx
 - ブランチ戦略: Github Flow
 - mainへのマージリクエストをトリガに、以下の2段構成でパイプライン実行する。
   - CI: 脆弱性スキャン、terraform validate、READMEなどのドキュメント更新
+    - 環境: Gitlab CI
+    - mainブランチへのMerge Requestをトリガにする。
   - CD: terraform plan, apply
-- terraform plan結果は保存し、手動承認後にapplyする。
+    - 環境: HCP Terraform
+    - terraform plan結果は保存し、手動承認後にapplyする。
+- 開発の流れ (環境がdevしかない前提)
+  1. feature/xxxブランチを作成
+  2. 開発する。ローカル端末でterraform validate, planを実行し問題がないことを確認する。  
+     ※ ローカル端末からapplyは行わない (VCS連動なのでできない)。
+  3. mainへのマージリクエストを作成する。このタイミングでCIが実行される。
+  4. CI結果に問題がなければマージする。このタイミングでCDが実行される。
+  5. terraform planの結果に問題がなければ承認する。このタイミングでterraform applyが実行され、stateファイルが更新される。
+  6. 問題が生じた場合は過去のstateファイルから戻しを行う。
+
 
 ## その他
 ### 参考情報
@@ -56,17 +64,19 @@ xxx
 - システム
   - [x] VPCのプロトタイプ実装
   - [x] ALB-S3のプロトタイプ実装
-  - [ ] API GWのプロトタイプ実装
+  - [x] API GWのプロトタイプ実装
   - [ ] ECS/Fargateのプロトタイプ実装
   - [ ] Auroraのプロトタイプ実装
+  - [ ] S3手前のAPNのFQDNを任意に変える (Route53)
 - CI/CD (インフラ)
   - [x] ブランチ戦略
   - [x] Pipelineのプロトタイプ実装 (Gitlab CI/HCP Terraform)
   - [x] stateをHCP Terraformで管理
   - [x] エラーハンドリング (scriptがこけたら止める)
   - [x] mainブランチ以外、git commitをトリガに実行されないようにする
-  - [ ] CI/CD関連のIAM設定をterraformで実装
-  - [ ] HCP Terraform設定をterraformで実装
+  - [x] featureへのpushをトリガにterraform planする
+  - [ ] featureの自動planをやめ、planまではLocalで行うように実装する
+  - [ ] HCP Terraform設定をtfファイルで管理
   - [x] 01/02/03の各レイヤでのCI/CD実装
   - [ ] CDは並列実行されず、03→02→01の順序でapplyされるように実装する
   - [ ] terraform plan結果の保存
@@ -87,9 +97,14 @@ xxx
   - [ ] ログ保管の実装
   - [ ] cost alertの導入
 - セキュリティ
+  - [ ] CI/CD関連のIAM設定をterraformで実装(03/module/tfc_role)
+  - [ ] Cognitoの導入
+  - [ ] AD, ADFS (on EC2) の導入
+  - [ ] API GatewayへのJWT Authorizor導入
   - [ ] Local端末でのセキュアな秘匿情報運用
   - [ ] Control Towerのプロトタイプ実装
   - [ ] IAM User, IAM GroupのTerraform管理
+  - [ ] ALB, API GatewayへのSSL証明書導入 (ACM)
 - テスト
   - [ ] Datadogでシステム外結合テストを実装
 - ドキュメント運用
@@ -97,7 +112,8 @@ xxx
 - 開発
   - [x] terraformのディレクトリ構成, 方針の検討
   - [x] Antigravity
+  - [ ] o1_core_infra, 02_observability, 数字が逆のほうがdeployの順序性がわかりやすい？
   - [ ] terraform provider Vup運用の検討
-  - [ ] mainに直接commitできないようにする
+  - [x] mainに直接pushできないようにする
 - ガバナンス
   - [ ] ライセンス保護
