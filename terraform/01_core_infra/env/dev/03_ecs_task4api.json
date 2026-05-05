@@ -2,8 +2,6 @@
   {
     "name": "${name}",
     "image": "public.ecr.aws/nginx/nginx:${image_tag}",
-    "cpu": 0,
-    "memory": 0,
     "essential": true,
     "portMappings": [
       {
