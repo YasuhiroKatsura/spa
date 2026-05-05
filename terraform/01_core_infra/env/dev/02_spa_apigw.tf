@@ -29,7 +29,7 @@ resource "aws_apigatewayv2_integration" "apigw_to_ecs4api" {
   api_id             = aws_apigatewayv2_api.apigw_to_ecs4api.id
   integration_type   = "HTTP_PROXY"
   integration_method = "ANY"
-  integration_uri    = "http://${aws_lb.alb_to_ecs4api.dns_name}"
+  integration_uri    = aws_lb_listener.alb_to_ecs4api.arn
   connection_type = "VPC_LINK"
   connection_id   = aws_apigatewayv2_vpc_link.vpclink_to_ecs4api.id
   payload_format_version = "1.0"
