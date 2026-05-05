@@ -9,7 +9,7 @@ variable "spa_api" {
   }
 }
 
-#-----ALB-----
+# -----ALB-----
 resource "aws_lb" "alb_to_ecs4api" {
   name               = "${var.common.project_name}-alb-to-ecs4api"
   internal           = "true" # プライベート
