@@ -107,8 +107,12 @@ resource "aws_ecs_service" "ecs_service4api" {
   cluster         = aws_ecs_cluster.ecs_cluster4api.id
   task_definition = aws_ecs_task_definition.ecs_task4api.arn
   desired_count   = "${var.spa_api.desired_count}"
-  launch_type     = "FARGATE"
   enable_execute_command = true # SSMからのコンテナ接続を許可
+
+  capacity_provider_strategy {
+    capacity_provider = "FARGATE_SPOT"
+    weight            = 100
+  }
 
   network_configuration {
     subnets          = [
