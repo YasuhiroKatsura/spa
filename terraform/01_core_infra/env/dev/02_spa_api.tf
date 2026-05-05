@@ -9,6 +9,76 @@ variable "spa_api" {
   }
 }
 
+# -----IAM Role (ECS Task Execution Role)-----
+resource "aws_iam_role" "ecs_task_execution_role_4api" {
+  name = "${var.common.project_name}-ecs-task-execution-role-4api"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_4api" {
+  role       = aws_iam_role.ecs_task_execution_role_4api.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+# -----IAM Role (ECS Task Role - for SSM)-----
+resource "aws_iam_role" "ecs_task_role_4api" {
+  name = "${var.common.project_name}-ecs-task-role-4api"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_role_ssm_policy_4api" {
+  role       = aws_iam_role.ecs_task_role_4api.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy" "ecs_task_role_execute_command_policy_4api" {
+  name = "${var.common.project_name}-ecs-task-role-execute-command-policy-4api"
+  role = aws_iam_role.ecs_task_role_4api.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ssmmessages:CreateControlChannel", # SSMセッション用の制御チャネルを作成
+          "ssmmessages:CreateDataChannel", # コマンド実行・ファイル転送用のデータチャネルを作成
+          "ssmmessages:OpenControlChannel", # 既存の制御チャネルを開く（再接続時など）
+          "ssmmessages:OpenDataChannel" # 既存のデータチャネルを開く（既存セッション利用）
+        ]
+        Resource = "*"
+      },
+    ]
+  })
+}
+
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
 # -----ALB-----
 resource "aws_lb" "alb_to_ecs4api" {
   name               = "${var.common.project_name}-alb-to-ecs4api"
@@ -23,19 +93,31 @@ resource "aws_lb" "alb_to_ecs4api" {
   enable_deletion_protection = "false" # 削除保護は無効（個人利用なので...）
 }
 
+resource "aws_lb_target_group" "alb_tg_4api" {
+  name        = "${var.common.project_name}-alb-tg-4api"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = data.terraform_remote_state.landing_zone.outputs.ids.vpc_id
+  target_type = "ip"
+
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 3
+    interval            = 30
+    path                = "/"
+    matcher             = "200"
+  }
+}
+
 resource "aws_lb_listener" "alb_to_ecs4api" {
   load_balancer_arn = aws_lb.alb_to_ecs4api.arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
-    type = "fixed-response"
-
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "OK - default action"
-      status_code  = "200"
-    }
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.alb_tg_4api.arn
   }
 }
 
@@ -74,7 +156,8 @@ resource "aws_ecs_task_definition" "ecs_task4api" {
   memory                   = "${var.spa_api.task_memory}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  # execution_role_arn       = aws_iam_role.dev_ecs_task_execution_role.arn
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role_4api.arn
+  task_role_arn            = aws_iam_role.ecs_task_role_4api.arn
   container_definitions = templatefile(
     "./03_ecs_task4api.json",
     {
@@ -95,6 +178,7 @@ resource "aws_ecs_service" "ecs_service4api" {
   task_definition = aws_ecs_task_definition.ecs_task4api.arn
   desired_count   = "${var.spa_api.desired_count}"
   launch_type     = "FARGATE"
+  enable_execute_command = true # SSMからのコンテナ接続を許可
 
   network_configuration {
     subnets          = [
@@ -103,6 +187,15 @@ resource "aws_ecs_service" "ecs_service4api" {
     security_groups  = [aws_security_group.sg_on_ecs_service4api.id]
     assign_public_ip = "false"
   }
+
+  # ↓かみ砕く
+  load_balancer {
+    target_group_arn = aws_lb_target_group.alb_tg_4api.arn
+    container_name   = "${var.common.project_name}-ecs-container-4api"
+    container_port   = 80
+  }
+
+  depends_on = [aws_lb_listener.alb_to_ecs4api]
 }
 
 
