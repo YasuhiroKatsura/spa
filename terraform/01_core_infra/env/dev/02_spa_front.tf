@@ -120,19 +120,6 @@ resource "aws_lb_target_group_attachment" "alb_to_s34front" {
 resource "aws_security_group" "sg_on_alb_to_s34front" {
   name        = "${var.spa_front.name}-sg-on-alb-to-s34front"
   vpc_id      = data.terraform_remote_state.landing_zone.outputs.ids.vpc_id
-
-  ingress {
-    from_port   = "80"
-    to_port     = "80"
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 }
 
 resource "aws_security_group_rule" "sgrule_ingress_on_alb_to_s34front" {

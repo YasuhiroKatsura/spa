@@ -31,15 +31,15 @@ main_validate_job:
       - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
 
 # -----feature branchのみterraform planを実行-----
-feature_plan_job:
-  stage: test
+# feature_plan_job:
+#   stage: test
 
-  script:
-    - $CI_PROJECT_DIR/pipeline/scripts/feature_plan.sh $AWS_ENV $TARGET_LAYER
+#   script:
+#     - $CI_PROJECT_DIR/pipeline/scripts/feature_plan.sh $AWS_ENV $TARGET_LAYER
 
-  rules:
-    - if: '$CI_COMMIT_BRANCH =~ /^feature\//'
+#   rules:
+#     - if: '$CI_COMMIT_BRANCH =~ /^feature\//'
 
-  parallel:
-    matrix:
-      - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
+#   parallel:
+#     matrix:
+#       - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
