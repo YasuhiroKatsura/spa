@@ -9,76 +9,6 @@ variable "spa_api" {
   }
 }
 
-# -----IAM Role (ECS Task Execution Role)-----
-resource "aws_iam_role" "ecs_task_execution_role_4api" {
-  name = "${var.common.project_name}-ecs-task-execution-role-4api"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_4api" {
-  role       = aws_iam_role.ecs_task_execution_role_4api.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-}
-
-# -----IAM Role (ECS Task Role - for SSM)-----
-resource "aws_iam_role" "ecs_task_role_4api" {
-  name = "${var.common.project_name}-ecs-task-role-4api"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_task_role_ssm_policy_4api" {
-  role       = aws_iam_role.ecs_task_role_4api.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
-
-resource "aws_iam_role_policy" "ecs_task_role_execute_command_policy_4api" {
-  name = "${var.common.project_name}-ecs-task-role-execute-command-policy-4api"
-  role = aws_iam_role.ecs_task_role_4api.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "ssmmessages:CreateControlChannel", # SSMセッション用の制御チャネルを作成
-          "ssmmessages:CreateDataChannel", # コマンド実行・ファイル転送用のデータチャネルを作成
-          "ssmmessages:OpenControlChannel", # 既存の制御チャネルを開く（再接続時など）
-          "ssmmessages:OpenDataChannel" # 既存のデータチャネルを開く（既存セッション利用）
-        ]
-        Resource = "*"
-      },
-    ]
-  })
-}
-
-data "aws_caller_identity" "current" {}
-data "aws_region" "current" {}
-
 # -----ALB-----
 resource "aws_lb" "alb_to_ecs4api" {
   name               = "${var.common.project_name}-alb-to-ecs4api"
@@ -156,8 +86,8 @@ resource "aws_ecs_task_definition" "ecs_task4api" {
   memory                   = "${var.spa_api.task_memory}"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role_4api.arn
-  task_role_arn            = aws_iam_role.ecs_task_role_4api.arn
+  execution_role_arn       = aws_iam_role.role_ecs_task_execution.arn
+  task_role_arn            = aws_iam_role.role_ecs_task.arn
   container_definitions = templatefile(
     "./03_ecs_task4api.json",
     {
@@ -188,7 +118,6 @@ resource "aws_ecs_service" "ecs_service4api" {
     assign_public_ip = "false"
   }
 
-  # ↓かみ砕く
   load_balancer {
     target_group_arn = aws_lb_target_group.alb_tg_4api.arn
     container_name   = "${var.common.project_name}-ecs-container-4api"
@@ -198,6 +127,46 @@ resource "aws_ecs_service" "ecs_service4api" {
   depends_on = [aws_lb_listener.alb_to_ecs4api]
 }
 
+# -----IAM Role (ECS Task Execution Role)-----
+resource "aws_iam_role" "role_ecs_task_execution" {
+  name = "${var.common.project_name}-ecs-task-execution-role-4api"
+
+  assume_role_policy = templatefile(
+    "./03_trust_policy.json",
+    {
+      service = "ecs-tasks.amazonaws.com"
+    }
+  )
+}
+
+resource "aws_iam_role_policy_attachment" "role_ecs_task_execution_execution_policy" {
+  role       = aws_iam_role.role_ecs_task_execution.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+# -----IAM Role (ECS Task Role)-----
+resource "aws_iam_role" "role_ecs_task" {
+  name = "${var.common.project_name}-ecs-task-role-4api"
+
+  assume_role_policy = templatefile(
+    "./03_trust_policy.json",
+    {
+      service = "ecs-tasks.amazonaws.com"
+    }
+  )
+}
+
+resource "aws_iam_role_policy_attachment" "role_ecs_task_ssm_policy" {
+  role       = aws_iam_role.role_ecs_task.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy" "policy_connect_ssm_for_ecs_task" {
+  name = "${var.common.project_name}-ecs-task-role-execute-command-policy-4api"
+  role = aws_iam_role.role_ecs_task.id
+
+  policy = templatefile("./03_policy_connect_ssm.json", {})
+}
 
 # -----security group (ECS Service用)-----
 resource "aws_security_group" "sg_on_ecs_service4api" {
