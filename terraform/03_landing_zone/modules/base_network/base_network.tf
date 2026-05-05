@@ -10,7 +10,7 @@ resource "aws_vpc" "this" {
   enable_dns_support   = "true"
   enable_dns_hostnames = "true"
   tags = {
-    Name = "${var.vpc.name}-vpc"
+    Name = "${var.common.project_name}-vpc"
   }
 }
 
@@ -23,7 +23,7 @@ resource "aws_subnet" "public" {
   availability_zone = "${var.common.region}${each.key}"
   map_public_ip_on_launch = "false"
   tags = {
-    Name = "${var.vpc.name}-pub-sn-${each.key}"
+    Name = "${var.common.project_name}-pub-sn-${each.key}"
   }
 }
 

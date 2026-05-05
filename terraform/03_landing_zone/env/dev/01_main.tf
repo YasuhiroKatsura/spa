@@ -20,7 +20,6 @@ variable "common" {
 variable "vpc" {
   type = map(string)
   default = {
-    name = "spa"
     cidr_block = "10.0.0.0/16"
   }
 }

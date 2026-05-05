@@ -1,9 +1,7 @@
 # -----変数定義-----
 variable "spa_front" {
   type = map(string)
-  default = {
-    name = "spa"
-  }
+  default = {}
 }
 
 #-----S3バケット-----
@@ -52,7 +50,7 @@ data "aws_network_interface" "vpc_endpt_to_s34front" {
 
 # -----security group (S3エンドポイント用)-----
 resource "aws_security_group" "sg_on_vpcendpt_to_s34front" {
-  name        = "${var.spa_front.name}-sg-on-vpcendpt-to-s34front"
+  name        = "${var.common.project_name}-sg-on-vpcendpt-to-s34front"
   vpc_id      = data.terraform_remote_state.landing_zone.outputs.ids.vpc_id
 }
 
@@ -76,7 +74,7 @@ resource "aws_security_group_rule" "sgrule_egress_on_vpcendpt_to_s34front" {
 
 #-----ALB-----
 resource "aws_lb" "alb_to_s34front" {
-  name               = "${var.spa_front.name}-alb-to-s34front"
+  name               = "${var.common.project_name}-alb-to-s34front"
   internal           = "false" # インターネットに公開
   load_balancer_type = "application"
   security_groups    = [aws_security_group.sg_on_alb_to_s34front.id]
@@ -97,7 +95,7 @@ resource "aws_lb_listener" "alb_to_s34front" {
 }
 
 resource "aws_lb_target_group" "alb_to_s34front" {
-  name        = "${var.spa_front.name}-alb-to-s34front"
+  name        = "${var.common.project_name}-alb-to-s34front"
   port        = 443
   protocol    = "HTTPS" # S3エンドポイントとの通信はHTTPS
   vpc_id      = data.terraform_remote_state.landing_zone.outputs.ids.vpc_id
@@ -118,7 +116,7 @@ resource "aws_lb_target_group_attachment" "alb_to_s34front" {
 
 # -----security group (ALB用)-----
 resource "aws_security_group" "sg_on_alb_to_s34front" {
-  name        = "${var.spa_front.name}-sg-on-alb-to-s34front"
+  name        = "${var.common.project_name}-sg-on-alb-to-s34front"
   vpc_id      = data.terraform_remote_state.landing_zone.outputs.ids.vpc_id
 }
 
