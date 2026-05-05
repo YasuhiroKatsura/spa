@@ -39,8 +39,20 @@ xxx
 - ブランチ戦略: Github Flow
 - mainへのマージリクエストをトリガに、以下の2段構成でパイプライン実行する。
   - CI: 脆弱性スキャン、terraform validate、READMEなどのドキュメント更新
+    - 環境: Gitlab CI
+    - mainブランチへのMerge Requestをトリガにする。
   - CD: terraform plan, apply
-- terraform plan結果は保存し、手動承認後にapplyする。
+    - 環境: HCP Terraform
+    - terraform plan結果は保存し、手動承認後にapplyする。
+- 開発の流れ (環境がdevしかない前提)
+  1. feature/xxxブランチを作成
+  2. 開発する。ローカル端末でterraform validate, planを実行し問題がないことを確認する。  
+     ※ ローカル端末からapplyは行わない (VCS連動なのでできない)。
+  3. mainへのマージリクエストを作成する。このタイミングでCIが実行される。
+  4. CI結果に問題がなければマージする。このタイミングでCDが実行される。
+  5. terraform planの結果に問題がなければ承認する。このタイミングでterraform applyが実行され、stateファイルが更新される。
+  6. 問題が生じた場合は過去のstateファイルから戻しを行う。
+
 
 ## その他
 ### 参考情報
