@@ -35,7 +35,10 @@ resource "aws_apigatewayv2_integration" "apigw_to_ecs4api" {
 resource "aws_apigatewayv2_vpc_link" "vpclink_to_ecs4api" {
   name = "${var.spa_api.name}-vpclink-to-ecs4api"
 
-  subnet_ids = data.terraform_remote_state.landing_zone.outputs.ids.private_subnet_ids
+  subnet_ids = [
+    data.terraform_remote_state.landing_zone.outputs.ids.private_subnet_ids[0],
+    data.terraform_remote_state.landing_zone.outputs.ids.private_subnet_ids[1]
+  ]
 
   security_group_ids = [aws_security_group.sg_on_vpclink_to_ecs4api.id]
 }
@@ -62,7 +65,10 @@ resource "aws_lb" "alb_to_ecs4api" {
   internal           = "true" # プライベート
   load_balancer_type = "application"
   security_groups    = [aws_security_group.sg_on_alb_to_ecs4api.id]
-  subnets            = data.terraform_remote_state.landing_zone.outputs.ids.private_subnet_ids
+  subnets            = [
+    data.terraform_remote_state.landing_zone.outputs.ids.private_subnet_ids[0],
+    data.terraform_remote_state.landing_zone.outputs.ids.private_subnet_ids[1]
+  ]
 
   enable_deletion_protection = "false" # 削除保護は無効（個人利用なので...）
 }

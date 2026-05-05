@@ -38,6 +38,7 @@ variable "private_subnets" {
   default = {
     "a" = "10.0.2.0/24"
     "c" = "10.0.3.0/24"
+    "d" = "10.0.4.0/24" # Fargate用
   }
 }
 
