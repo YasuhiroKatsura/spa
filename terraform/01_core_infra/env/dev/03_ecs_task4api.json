@@ -1,0 +1,21 @@
+[
+  {
+    "name": "${name}",
+    "image": "public.ecr.aws/nginx/nginx:${image_tag}",
+    "cpu": 0,
+    "memory": 0,
+    "essential": true,
+    "portMappings": [
+      {
+        "name": "http",
+        "containerPort": 80,
+        "hostPort": 80,
+        "protocol": "tcp"
+      }
+    ],
+    "readonlyRootFilesystem": false,
+    "linuxParameters": {
+      "initProcessEnabled": true
+    }
+  }
+]
