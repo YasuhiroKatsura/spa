@@ -115,5 +115,6 @@ xxx
   - [ ] o1_core_infra, 02_observability, 数字が逆のほうがdeployの順序性がわかりやすい？
   - [ ] terraform provider Vup運用の検討
   - [x] mainに直接pushできないようにする
+  - [ ] tfファイル全般の命名規則見直し
 - ガバナンス
   - [ ] ライセンス保護
