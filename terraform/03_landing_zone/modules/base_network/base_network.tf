@@ -36,7 +36,7 @@ resource "aws_subnet" "private" {
   availability_zone = "${var.common.region}${each.key}"
   map_public_ip_on_launch = "true"
   tags = {
-    Name = "${var.vpc.name}-pvt-sn-${each.key}"
+    Name = "${var.common.project_name}-pvt-sn-${each.key}"
   }
 }
 
@@ -45,7 +45,7 @@ resource "aws_internet_gateway" "this" {
   count  = length(var.public_subnets) > 0 ? 1 : 0 # public snがある場合のみ作成
   vpc_id = aws_vpc.this.id
   tags = {
-    Name = "${var.vpc.name}-igw"
+    Name = "${var.common.project_name}-igw"
   }
 }
 
@@ -60,7 +60,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "${var.vpc.name}-public-rt"
+    Name = "${var.common.project_name}-public-rt"
   }
 }
 
@@ -75,7 +75,7 @@ resource "aws_route_table" "private" {
   count  = length(var.private_subnets) > 0 ? 1 : 0
   vpc_id = aws_vpc.this.id
   tags = {
-    Name = "${var.vpc.name}-private-rt"
+    Name = "${var.common.project_name}-private-rt"
   }
 }
 
