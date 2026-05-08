@@ -35,9 +35,11 @@ variable "public_subnets" {
 variable "private_subnets" {
   type = map(string)
   default = {
-    "a" = "10.0.2.0/24"
-    "c" = "10.0.3.0/24"
+    "a" = "10.0.2.0/24" # ECS手前のALB用
+    "c" = "10.0.3.0/24" # ECS手前のALB用
     "d" = "10.0.4.0/24" # ECS Service用
+    "e" = "10.0.5.0/24" # Aurora用
+    "f" = "10.0.6.0/24" # Aurora用
   }
 }
 
