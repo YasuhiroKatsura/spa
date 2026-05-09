@@ -31,8 +31,8 @@ resource "aws_rds_cluster" "aurora_cluster" {
   preferred_maintenance_window = "mon:04:00-mon:05:00"
   
   storage_encrypted       = true
-  deletion_protection     = ${var.rds_aurora.deletion_protection}
-  skip_final_snapshot     = ${var.rds_aurora.skip_final_snapshot}
+  deletion_protection     = "${var.rds_aurora.deletion_protection}"
+  skip_final_snapshot     = "${var.rds_aurora.skip_final_snapshot}"
 }
 
 # -----RDS Aurora DB Instance-----
