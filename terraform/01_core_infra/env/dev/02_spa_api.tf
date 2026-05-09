@@ -93,6 +93,11 @@ resource "aws_ecs_task_definition" "ecs_task4api" {
     {
       name = "${var.common.project_name}-ecs-container-4api"
       image_tag = "${var.spa_api.image_tag}"
+      db_host = aws_rds_cluster.aurora_cluster.endpoint
+      db_port = aws_rds_cluster.aurora_cluster.port
+      db_name = aws_rds_cluster.aurora_cluster.database_name
+      db_user = "${var.rds_aurora.aurora_username}"
+      db_password = "${var.rds_aurora.aurora_password}"
     }
   )
 
