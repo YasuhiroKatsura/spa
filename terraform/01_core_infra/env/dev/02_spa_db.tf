@@ -1,5 +1,5 @@
 # -----変数定義-----
-variable "rds_aurora" {
+variable "spa_db" {
   type = map(string)
   default = {
     engine_version  = "15.2"
@@ -19,31 +19,31 @@ variable "rds_aurora" {
 resource "aws_rds_cluster" "aurora_cluster" {
   cluster_identifier      = "${var.common.project_name}-aurora-cluster"
   engine                  = "aurora-postgresql"
-  engine_version          = "${var.rds_aurora.engine_version}"
+  engine_version          = "${var.spa_db.engine_version}"
   database_name           = "${var.common.project_name}-aurora-db"
-  master_username         = "${var.rds_aurora.aurora_username}"
-  master_password         = "${var.rds_aurora.aurora_password}"
+  master_username         = "${var.spa_db.aurora_username}"
+  master_password         = "${var.spa_db.aurora_password}"
   db_subnet_group_name    = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids  = [aws_security_group.sg_on_rds_aurora.id]
 
-  backup_retention_period = "${var.rds_aurora.backup_retention_days}"
+  backup_retention_period = "${var.spa_db.backup_retention_days}"
   preferred_backup_window = "03:00-04:00"
   preferred_maintenance_window = "mon:04:00-mon:05:00"
 
   storage_encrypted       = true
-  deletion_protection     = "${var.rds_aurora.deletion_protection}"
-  skip_final_snapshot     = "${var.rds_aurora.skip_final_snapshot}"
+  deletion_protection     = "${var.spa_db.deletion_protection}"
+  skip_final_snapshot     = "${var.spa_db.skip_final_snapshot}"
 }
 
 # -----RDS Aurora DB Instance-----
 resource "aws_rds_cluster_instance" "aurora_instance" {
-  count              = "${var.rds_aurora.instance_count}"
+  count              = "${var.spa_db.instance_count}"
   cluster_identifier = aws_rds_cluster.aurora_cluster.id
-  instance_class     = "${var.rds_aurora.instance_class}"
-  engine              = "${var.rds_aurora.engine}"
-  engine_version      = "${var.rds_aurora.engine_version}"
+  instance_class     = "${var.spa_db.instance_class}"
+  engine              = "${var.spa_db.engine}"
+  engine_version      = "${var.spa_db.engine_version}"
 
-  performance_insights_enabled = "${var.rds_aurora.performance_insights_enabled}"
+  performance_insights_enabled = "${var.spa_db.performance_insights_enabled}"
   auto_minor_version_upgrade   = true # マイナーバージョンの自動アップグレードを有効化
 }
 

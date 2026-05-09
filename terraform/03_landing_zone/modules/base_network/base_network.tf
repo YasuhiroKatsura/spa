@@ -33,7 +33,7 @@ resource "aws_subnet" "private" {
 
   vpc_id            = aws_vpc.this.id
   cidr_block        = each.value
-  availability_zone = "${var.common.region}${each.key}"
+  availability_zone = "${var.common.region}${regex("[ac]$", each.key)}"
   map_public_ip_on_launch = "true"
   tags = {
     Name = "${var.common.project_name}-pvt-sn-${each.key}"
