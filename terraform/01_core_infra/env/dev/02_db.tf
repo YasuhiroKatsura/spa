@@ -25,11 +25,11 @@ resource "aws_rds_cluster" "aurora_cluster" {
   master_password         = "${var.rds_aurora.aurora_password}"
   db_subnet_group_name    = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids  = [aws_security_group.sg_on_rds_aurora.id]
-  
+
   backup_retention_period = "${var.rds_aurora.backup_retention_days}"
   preferred_backup_window = "03:00-04:00"
   preferred_maintenance_window = "mon:04:00-mon:05:00"
-  
+
   storage_encrypted       = true
   deletion_protection     = "${var.rds_aurora.deletion_protection}"
   skip_final_snapshot     = "${var.rds_aurora.skip_final_snapshot}"
