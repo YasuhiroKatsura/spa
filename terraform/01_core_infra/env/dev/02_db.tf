@@ -84,7 +84,7 @@ resource "aws_security_group" "sg_on_rds_aurora" {
   description = "Security group for Aurora PostgreSQL"
 }
 
-# ECS TaskからのPostgresアクセス
+# ECS TaskからのAuroraへのアクセス
 resource "aws_security_group_rule" "sgrule_ingress_postgres_from_ecs" {
   security_group_id = aws_security_group.sg_on_rds_aurora.id
   type              = "ingress"
