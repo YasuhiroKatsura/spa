@@ -40,7 +40,7 @@ resource "aws_rds_cluster_instance" "aurora_instance" {
   count              = "${var.spa_db.instance_count}"
   cluster_identifier = aws_rds_cluster.aurora_cluster.id
   instance_class     = "${var.spa_db.instance_class}"
-  engine              = "${var.spa_db.engine}"
+  engine              = "aurora-postgresql"
   engine_version      = "${var.spa_db.engine_version}"
 
   performance_insights_enabled = "${var.spa_db.performance_insights_enabled}"
