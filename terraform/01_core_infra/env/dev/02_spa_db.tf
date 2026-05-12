@@ -2,7 +2,7 @@
 variable "spa_db" {
   type = map(string)
   default = {
-    engine_version  = "15.2"
+    engine_version  = "17.7"
     database_name   = "spadb"
     aurora_username = "postgres"
     aurora_password = ""
