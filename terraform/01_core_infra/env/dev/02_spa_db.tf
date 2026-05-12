@@ -20,7 +20,7 @@ resource "aws_rds_cluster" "aurora_cluster" {
   cluster_identifier      = "${var.common.project_name}-aurora-cluster"
   engine                  = "aurora-postgresql"
   engine_version          = "${var.spa_db.engine_version}"
-  database_name           = "${var.common.project_name}-aurora-db"
+  database_name           = "${var.common.project_name}AuroraDB" # alphabet only
   master_username         = "${var.spa_db.aurora_username}"
   master_password         = "${var.spa_db.aurora_password}"
   db_subnet_group_name    = aws_db_subnet_group.rds_subnet_group.name
