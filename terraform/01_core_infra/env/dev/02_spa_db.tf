@@ -4,8 +4,6 @@ variable "spa_db" {
   default = {
     engine_version  = "17.7"
     database_name   = "spadb"
-    aurora_username = "postgres"
-    aurora_password = ""
     instance_class  = "db.t3.micro"
     instance_count  = "1"
     backup_retention_days = "1" # バックアップ保持期間 (日数)
@@ -21,8 +19,8 @@ resource "aws_rds_cluster" "aurora_cluster" {
   engine                  = "aurora-postgresql"
   engine_version          = "${var.spa_db.engine_version}"
   database_name           = "${var.common.project_name}AuroraDB" # alphabet only
-  master_username         = "${var.spa_db.aurora_username}"
-  master_password         = "${var.spa_db.aurora_password}"
+  master_username         = "postgres"
+  manage_master_user_password =  true
   db_subnet_group_name    = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids  = [aws_security_group.sg_on_rds_aurora.id]
 
