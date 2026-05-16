@@ -96,8 +96,8 @@ resource "aws_ecs_task_definition" "ecs_task4api" {
       db_host = aws_rds_cluster.aurora_cluster.endpoint
       db_port = aws_rds_cluster.aurora_cluster.port
       db_name = aws_rds_cluster.aurora_cluster.database_name
-      db_user = "${var.spa_db.aurora_username}"
-      db_password = "${var.spa_db.aurora_password}"
+      db_user = aws_rds_cluster.aurora_cluster.master_username
+      db_secret_arn = aws_rds_cluster.aurora_cluster.master_user_secret[0].secret_arn
     }
   )
 

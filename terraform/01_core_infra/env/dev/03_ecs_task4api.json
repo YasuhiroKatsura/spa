@@ -27,10 +27,12 @@
       {
         "name": "DB_USER",
         "value": "${db_user}"
-      },
+      }
+    ],
+    "secrets": [
       {
         "name": "DB_PASSWORD",
-        "value": "${db_password}"
+        "valueFrom": "${db_secret_arn}:password::"
       }
     ],
     "readonlyRootFilesystem": false,
