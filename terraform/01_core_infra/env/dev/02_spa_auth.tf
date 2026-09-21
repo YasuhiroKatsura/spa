@@ -117,6 +117,7 @@ resource "aws_cognito_user_pool_domain" "spa" {
 resource "aws_cognito_managed_login_branding" "spa" {
 	user_pool_id = aws_cognito_user_pool.spa.id
 	client_id    = aws_cognito_user_pool_client.spa.id
+	use_cognito_provided_values = true
 }
 
 
