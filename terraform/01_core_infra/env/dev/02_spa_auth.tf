@@ -106,7 +106,7 @@ resource "aws_cognito_user_pool_client" "spa" {
 	allowed_oauth_scopes                 = ["openid", "email", "profile"]
 	callback_urls                        = var.cognito_callback_urls
 	logout_urls                          = var.cognito_logout_urls
-	supported_identity_providers         = [aws_cognito_identity_provider.entra.provider_name]
+    supported_identity_providers         = ["COGNITO", aws_cognito_identity_provider.entra.provider_name]
 }
 
 resource "aws_cognito_user_pool_domain" "spa" {
@@ -114,31 +114,31 @@ resource "aws_cognito_user_pool_domain" "spa" {
 	user_pool_id = aws_cognito_user_pool.spa.id
 }
 
-locals {
-	cognito_hosted_ui_url = "https://${aws_cognito_user_pool_domain.spa.domain}.auth.${var.common.region}.amazoncognito.com"
+resource "aws_cognito_managed_login_branding" "spa" {
+  user_pool_id = aws_cognito_user_pool.spa.id
+  client_id    = aws_cognito_user_pool_client.spa.id
+  
+  # 画面デザインのカスタマイズ（JSON設定）
+  settings = jsonencode({
+    categories = {
+      primary_color = "#0066CC" # メインのボタン色など
+    }
+  })
 }
 
-output "cognito_user_pool_id" {
-	description = "Cognito User Pool ID for the SPA authentication flow."
-	value       = aws_cognito_user_pool.spa.id
-}
 
-output "cognito_user_pool_client_id" {
-	description = "Cognito User Pool app client ID for the SPA authentication flow."
-	value       = aws_cognito_user_pool_client.spa.id
-}
+# いらんかったら削除
+# output "cognito_user_pool_id" {
+# 	description = "Cognito User Pool ID for the SPA authentication flow."
+# 	value       = aws_cognito_user_pool.spa.id
+# }
 
-output "cognito_issuer_url" {
-	description = "Cognito User Pool issuer URL for downstream JWT validation."
-	value       = "https://cognito-idp.${var.common.region}.amazonaws.com/${aws_cognito_user_pool.spa.id}"
-}
+# output "cognito_user_pool_client_id" {
+# 	description = "Cognito User Pool app client ID for the SPA authentication flow."
+# 	value       = aws_cognito_user_pool_client.spa.id
+# }
 
-output "cognito_hosted_ui_url" {
-	description = "Cognito Hosted UI base URL."
-	value       = local.cognito_hosted_ui_url
-}
-
-output "cognito_entra_idp_response_url" {
-	description = "Redirect URI to register in the Microsoft Entra app registration."
-	value       = "${local.cognito_hosted_ui_url}/oauth2/idpresponse"
-}
+# output "cognito_issuer_url" {
+# 	description = "Cognito User Pool issuer URL for downstream JWT validation."
+# 	value       = "https://cognito-idp.${var.common.region}.amazonaws.com/${aws_cognito_user_pool.spa.id}"
+# }
