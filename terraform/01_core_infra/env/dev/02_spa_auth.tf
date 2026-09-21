@@ -85,6 +85,7 @@ resource "aws_cognito_identity_provider" "entra" {
 		token_url                 = var.entra_oidc_token_url
 		jwks_uri                  = var.entra_oidc_jwks_url
 		attributes_url             = var.entra_oidc_userinfo_url
+		attributes_request_method = "GET"
 	}
 
 	attribute_mapping = {
