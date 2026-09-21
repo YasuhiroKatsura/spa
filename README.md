@@ -32,6 +32,28 @@ TFLint version 0.61.0
 ### 構成図
 xxx
 
+### CognitoとEntra IDのフェデレーション
+
+`terraform/01_core_infra/env/dev/02_spa_auth.tf` は、Cognito Hosted UI と Microsoft Entra ID の OIDC フェデレーションを定義する。
+
+Entra ID の App registration には、Terraform output の `cognito_entra_idp_response_url` を Web redirect URI として登録する。SPA の redirect URI は `cognito_callback_urls` と `cognito_logout_urls` に設定する。SPA クライアントは Authorization Code flow と PKCE を使用する。
+
+以下の値は HCP Terraform の workspace variables に設定する。`entra_client_secret` は必ず Sensitive にする。
+
+- `TF_VAR_entra_tenant_id`
+- `TF_VAR_entra_oidc_issuer_url`
+- `TF_VAR_entra_oidc_authorize_url`
+- `TF_VAR_entra_oidc_token_url`
+- `TF_VAR_entra_oidc_jwks_url`
+- `TF_VAR_entra_oidc_userinfo_url`
+- `TF_VAR_entra_client_id`
+- `TF_VAR_entra_client_secret`
+- `TF_VAR_cognito_domain_prefix`
+- `TF_VAR_cognito_callback_urls`
+- `TF_VAR_cognito_logout_urls`
+
+`cognito_entra_idp_response_url` は Cognito Hosted UI の IdP 応答先であり、SPA の callback URL とは異なる。Cognito domain prefix は AWS アカウント内で一意にし、dev と prd で分ける。
+
 
 ## CI/CD
 
