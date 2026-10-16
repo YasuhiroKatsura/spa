@@ -1,11 +1,12 @@
 variables:
   AWS_ENV: "dev"
+  CI_SCRIPTS_DIR: "$CI_PROJECT_DIR/pipeline/scripts"
   LAYER_01: "01_core_infra"
   LAYER_02: "02_observability"
   LAYER_03: "03_landing_zone"
 
 stages:
-  - test
+  - lint
 
 default:
   image: 
@@ -16,29 +17,23 @@ before_script:
   - echo "Adding execute permission to scripts"
   - chmod +x $CI_PROJECT_DIR/pipeline/scripts/*
 
-# -----main branchのみ: terraform validateを実行-----
-main_validate_job:
-  stage: test
+lint_terraform:
+  stage: lint
 
   script:
-    - $CI_PROJECT_DIR/pipeline/scripts/validate.sh $AWS_ENV $TARGET_LAYER
+    - $CI_SCRIPTS_DIR/terraform_lint.sh 
 
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト後（Merge前）のみ実行
 
-  parallel:
-    matrix:
-      - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
 
-# -----feature branchのみterraform planを実行-----
-# feature_plan_job:
+
+# main_validate_job:
 #   stage: test
 
 #   script:
-#     - $CI_PROJECT_DIR/pipeline/scripts/feature_plan.sh $AWS_ENV $TARGET_LAYER
+#     - $CI_PROJECT_DIR/pipeline/scripts/validate.sh $AWS_ENV $TARGET_LAYER
 
 #   rules:
-#     - if: '$CI_COMMIT_BRANCH =~ /^feature\//'
+#     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト後（Merge前）のみ実行
 
 #   parallel:
 #     matrix:
