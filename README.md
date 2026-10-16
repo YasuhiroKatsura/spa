@@ -76,6 +76,8 @@ Entra ID の App registration には、Terraform output の `cognito_entra_idp_r
   6. 問題が生じた場合は過去のstateファイルから戻しを行う。
 
 
+[managed login page](https://spa-auth.auth.ap-northeast-1.amazoncognito.com/login?client_id=1u3j9e23em0405faeqhr5mb8tm&response_type=code&scope=email+openid+profile&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F)
+
 ## その他
 ### 参考情報
 - [Terraform設計方針の参考](https://qiita.com/shogomuranushi/items/266f5ef342fb81a7a5cd)
