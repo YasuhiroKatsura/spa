@@ -17,6 +17,6 @@ cd $TARGET_LAYER/env/$AWS_ENV
 pwd; ls -a
 
 echo -e "\e[34mRunning TFlint.\e[0m"
-tflint -f compact --config=..\..\..\.tflint.hcl
+tflint -f compact --config=../../../.tflint.hcl
 
 echo "Task completed successfully!"

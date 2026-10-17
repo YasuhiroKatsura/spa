@@ -37,6 +37,7 @@ xxx
 - terraform planはgitlab-ciの中で実装する。
 CIはGitlab, CDはHCP Terraformという単位でプラットフォームを分離する。
 
+
 ### 方針
 - ブランチ戦略: Github Flow
 - mainへのマージリクエストをトリガに、以下の2段構成でパイプライン実行する。
