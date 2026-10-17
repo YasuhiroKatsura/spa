@@ -1,5 +1,14 @@
 # -----実行環境-----
 terraform {
+  required_version = "~> 1.15.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.49.0"
+    }
+  }
+
   cloud {
     organization = "okamura"
     workspaces {
@@ -27,10 +36,8 @@ data "terraform_remote_state" "landing_zone" {
   backend = "remote"
 
   config = {
-    # あなたのOrganization名
     organization = "okamura" 
 
-    # 参照したい先のWorkspace名
     workspaces = {
       name = "03_landing_zone" 
     }

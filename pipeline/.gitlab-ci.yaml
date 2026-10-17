@@ -1,45 +1,61 @@
 variables:
+  TERRAFORM_VERSION: "1.15.1"
+  TFLINT_VERSION: "v0.50.0"
   AWS_ENV: "dev"
+  CI_SCRIPTS_DIR: "$CI_PROJECT_DIR/pipeline/scripts"
   LAYER_01: "01_core_infra"
   LAYER_02: "02_observability"
   LAYER_03: "03_landing_zone"
 
-stages:
-  - test
+# TFLint pluginのダウンロード結果をキャッシュ
+cache:
+  key: tflint-${CI_COMMIT_REF_SLUG} # branchごとにキャッシュを分ける
+  paths:
+    - .tflint.d/plugins/
 
-default:
-  image: 
-    name: hashicorp/terraform:latest
-    entrypoint: [""]
+stages:
+  - lint
 
 before_script:
   - echo "Adding execute permission to scripts"
-  - chmod +x $CI_PROJECT_DIR/pipeline/scripts/*
+  - chmod +x $CI_PROJECT_DIR/pipeline/scripts/* # pipeline用scriptに実行権限を付与
 
-# -----main branchのみ: terraform validateを実行-----
-main_validate_job:
-  stage: test
-
+tflint:
+  stage: lint
+  image:
+    name: ghcr.io/terraform-linters/tflint:${TFLINT_VERSION}
+    entrypoint: [""]
   script:
-    - $CI_PROJECT_DIR/pipeline/scripts/validate.sh $AWS_ENV $TARGET_LAYER
+    - echo "test" # XXX 後で消す
+    # - $CI_SCRIPTS_DIR/tflint.sh $AWS_ENV $TARGET_LAYER
+  # parallel:
+  #   matrix:
+  #     - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
+  # rules:
+  #   - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
+  # parallel:
+  #   matrix:
+  #     - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
 
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト後（Merge前）のみ実行
-
-  parallel:
-    matrix:
-      - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
-
-# -----feature branchのみterraform planを実行-----
-# feature_plan_job:
-#   stage: test
-
+# terraform-fmt:
+#   stage: lint
+#   image:
+#     name: hashicorp/terraform:${TERRAFORM_VERSION}
+#     entrypoint: [""]
 #   script:
-#     - $CI_PROJECT_DIR/pipeline/scripts/feature_plan.sh $AWS_ENV $TARGET_LAYER
-
+#     - terraform fmt -check -diff -recursive terraform/ # XXX  # 修正項目がある場合はexit code 3を吐いて停止
 #   rules:
-#     - if: '$CI_COMMIT_BRANCH =~ /^feature\//'
+#     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
 
+# main_validate_job:
+#   stage: test
+#   image: 
+#     name: hashicorp/terraform:latest
+#     entrypoint: [""]
+#   script:
+#     - $CI_PROJECT_DIR/pipeline/scripts/validate.sh $AWS_ENV $TARGET_LAYER
+#   rules:
+    # - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
 #   parallel:
 #     matrix:
 #       - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
