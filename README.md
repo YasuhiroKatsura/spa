@@ -26,17 +26,19 @@ TFLint version 0.61.0
 ```
 
 ### 設計方針
-- Terraform構成は `terraform/env/<環境>` をroot module、`terraform/modules` を機能別moduleとする。ネットワーク、アプリ基盤、認証、監視を同じ環境rootから管理する。
+- Terraform構成は `terraform/env/<環境>` をroot moduleとし、共通化するVPC、IAM、Security Groupのみを `terraform/modules` に分離する。アプリケーションのリソースは環境rootで管理する。
 
 ### Terraform構成
 
 - `terraform/env/dev`: 開発環境のroot module（HCP Terraform workspace: `spa-infra-dev`）
-- `terraform/modules/network`: VPC、subnet、各機能のSecurity Groupとルールを一元管理するmodule
-- `terraform/modules/{database,api,api_gateway,auth,frontend}`: 機能別module
-- 6つのmoduleをroot moduleから呼び出して管理する。database、api、api_gateway、frontendも有効で、plan/applyによりAWSリソースが作成される。
+- `terraform/env/dev/0_provide.tf`: provider、共通設定、環境設定、外部入力の宣言
+- `terraform/env/dev/1_main.tf`: VPC、IAM、Security Group moduleの呼び出しとstateアドレス移行
+- `terraform/env/dev/2_*.tf`: database、container、API Gateway、frontend、authのリソース
+- `terraform/modules/vpc`: VPC、subnet、route
+- `terraform/modules/iam`: ECS task IAM roles and policies
+- `terraform/modules/sg`: 各ワークロードのSecurity Groupとルール
 
-検証とplanは `terraform/env/dev` で実行する。HCP Terraform workspaceのWorking Directoryも `terraform/env/dev` に設定する。Entra IDの値とCognito設定はHCP Terraform workspace variables（または対応する `TF_VAR_...` 環境変数）から渡し、client secretはSensitiveにする。
-network、database、api、api_gateway、auth、frontendの各moduleをroot moduleから呼び出している。
+検証とplanは `terraform/env/dev` で実行する。HCP Terraform workspaceのWorking Directoryも `terraform/env/dev` に設定する。環境設定とCognito設定は `0_provide.tf` のlocalsで管理し、Entra IDの値は同ファイルで宣言した入力変数としてHCP Terraform workspace variables（または対応する `TF_VAR_...` 環境変数）から渡す。client secretはSensitiveにする。
 
 既存のstateはHCP Terraform workspace `01_core_infra` と `03_landing_zone` に分かれている。統合後のworkspace `spa-infra-dev` に両方のstateを移行し、planで既存リソースの意図しない作成・削除がないことを確認してからapplyする。`moved`ブロックは同一state内のアドレス変更に対応するもので、workspace間のstate移行そのものは行わない。
 
@@ -45,7 +47,7 @@ xxx
 
 ### CognitoとEntra IDのフェデレーション
 
-`terraform/modules/auth/main.tf` は、Cognito Hosted UI と Microsoft Entra ID の OIDC フェデレーションを定義する。
+`terraform/env/dev/2_auth.tf` は、Cognito Hosted UI と Microsoft Entra ID の OIDC フェデレーションを定義する。
 
 Entra ID の App registration には、Terraform output の `cognito_entra_idp_response_url` を Web redirect URI として登録する。SPA の redirect URI は `cognito_callback_urls` と `cognito_logout_urls` に設定する。SPA クライアントは Authorization Code flow と PKCE を使用する。
 
@@ -59,9 +61,6 @@ Entra ID の App registration には、Terraform output の `cognito_entra_idp_r
 - `TF_VAR_entra_oidc_userinfo_url`
 - `TF_VAR_entra_client_id`
 - `TF_VAR_entra_client_secret`
-- `TF_VAR_cognito_domain_prefix`
-- `TF_VAR_cognito_callback_urls`
-- `TF_VAR_cognito_logout_urls`
 
 `cognito_entra_idp_response_url` は Cognito Hosted UI の IdP 応答先であり、SPA の callback URL とは異なる。Cognito domain prefix は AWS アカウント内で一意にし、dev と prd で分ける。
 
