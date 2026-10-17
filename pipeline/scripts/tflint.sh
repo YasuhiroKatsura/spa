@@ -7,16 +7,16 @@ TARGET_LAYER="$2"
 
 echo -e "\e[34mChanging directory to terraform root.\e[0m"
 cd terraform/
-pwd; ls -a
+echo "current directory: $(pwd)"
 
 echo -e "\e[34mInitializing TFlint.\e[0m"
 tflint --init
 
 echo -e "\e[34mChanging directory to:" $TARGET_LAYER "\e[0m"
 cd $TARGET_LAYER/env/$AWS_ENV
-pwd; ls -a
+echo "current directory: $(pwd)"
 
 echo -e "\e[34mRunning TFlint.\e[0m"
-tflint -f compact --config=../../../.tflint.hcl
+tflint -f compact --config=../../../.tflint.hcl # 修正項目がある場合はexit code 2を吐いて停止
 
 echo "Task completed successfully!"

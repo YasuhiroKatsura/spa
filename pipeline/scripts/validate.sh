@@ -7,7 +7,7 @@ TARGET_LAYER="$2"
 
 echo -e "\e[34mChanging directory to:" $TARGET_LAYER "\e[0m"
 cd terraform/$TARGET_LAYER/env/$AWS_ENV
-pwd; ls -a
+echo "current directory: $(pwd)"
 
 echo -e "\e[34mInitializing Terraform.\e[0m"
 terraform init -backend=false # HCPに接続せずローカルで構文チェックのみ行う
