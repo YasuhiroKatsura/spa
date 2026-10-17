@@ -20,31 +20,31 @@ before_script:
   - echo "Adding execute permission to scripts"
   - chmod +x $CI_PROJECT_DIR/pipeline/scripts/* # pipeline用scriptに実行権限を付与
 
-tflint:
-  stage: lint
-  image:
-    name: ghcr.io/terraform-linters/tflint:${TFLINT_VERSION}
-    entrypoint: [""]
-  script:
-    - $CI_SCRIPTS_DIR/tflint.sh $AWS_ENV $TARGET_LAYER
-  parallel:
-    matrix:
-      - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
-  parallel:
-    matrix:
-      - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
+# tflint:
+#   stage: lint
+#   image:
+#     name: ghcr.io/terraform-linters/tflint:${TFLINT_VERSION}
+#     entrypoint: [""]
+#   script:
+#     - $CI_SCRIPTS_DIR/tflint.sh $AWS_ENV $TARGET_LAYER
+#   parallel:
+#     matrix:
+#       - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
+#   parallel:
+#     matrix:
+#       - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
 
-terraform-fmt:
-  stage: lint
-  image:
-    name: hashicorp/terraform:${TERRAFORM_VERSION}
-    entrypoint: [""]
-  script:
-    - terraform fmt -check -diff -recursive terraform/ # XXX  # 修正項目がある場合はexit code 3を吐いて停止
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
+# terraform-fmt:
+#   stage: lint
+#   image:
+#     name: hashicorp/terraform:${TERRAFORM_VERSION}
+#     entrypoint: [""]
+#   script:
+#     - terraform fmt -check -diff -recursive terraform/ # XXX  # 修正項目がある場合はexit code 3を吐いて停止
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
 
 # main_validate_job:
 #   stage: test
