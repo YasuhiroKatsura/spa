@@ -1,4 +1,5 @@
 variables:
+  TERRAFORM_VERSION: "1.15.1"
   TFLINT_VERSION: "v0.50.0"
   AWS_ENV: "dev"
   CI_SCRIPTS_DIR: "$CI_PROJECT_DIR/pipeline/scripts"
@@ -15,14 +16,9 @@ cache:
 stages:
   - lint
 
-# default:
-#   image: 
-#     name: hashicorp/terraform:latest
-#     entrypoint: [""]
-
 before_script:
   - echo "Adding execute permission to scripts"
-  - chmod +x $CI_PROJECT_DIR/pipeline/scripts/*
+  - chmod +x $CI_PROJECT_DIR/pipeline/scripts/* # pipeline用scriptに実行権限を付与
 
 tflint:
   stage: lint
@@ -35,17 +31,24 @@ tflint:
     matrix:
       - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
 
+terraform-fmt:
+  stage: lint
+  image:
+    name: hashicorp/terraform:${TERRAFORM_VERSION}
+    entrypoint: [""]
+  script:
+    - terraform fmt -check -recursive terraform/ # XXX
 
 
 # main_validate_job:
 #   stage: test
-
+#   image: 
+#     name: hashicorp/terraform:latest
+#     entrypoint: [""]
 #   script:
 #     - $CI_PROJECT_DIR/pipeline/scripts/validate.sh $AWS_ENV $TARGET_LAYER
-
 #   rules:
 #     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト後（Merge前）のみ実行
-
 #   parallel:
 #     matrix:
 #       - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
