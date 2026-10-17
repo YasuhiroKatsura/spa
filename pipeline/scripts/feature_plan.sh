@@ -3,10 +3,9 @@
 set -e # エラー発生時にスクリプトを終了
 
 AWS_ENV="$1"
-TARGET_LAYER="$2"
 
-echo -e "\e[34mChanging directory to:" $TARGET_LAYER "\e[0m"
-cd terraform/$TARGET_LAYER/env/$AWS_ENV
+echo -e "\e[34mChanging directory to terraform/env/$AWS_ENV\e[0m"
+cd "terraform/env/$AWS_ENV"
 echo "current directory: $(pwd)"
 
 echo -e "\e[34mInitializing Terraform.\e[0m"

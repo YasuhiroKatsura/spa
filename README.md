@@ -26,15 +26,26 @@ TFLint version 0.61.0
 ```
 
 ### 設計方針
-- core instance (storage, loadbalancer, compute, resource-base roleなど), observability (cloud watch, dataaogなど), landing zone (network, scp, control towerなど)の3層に分ける。
-- simple is bestで作る。基本的にmodulesは使わない。ただしlanding zoneは組織全体で共通する設定項目のため例外とし、機能別で実装する。
+- Terraform構成は `terraform/env/<環境>` をroot module、`terraform/modules` を機能別moduleとする。ネットワーク、アプリ基盤、認証、監視を同じ環境rootから管理する。
+
+### Terraform構成
+
+- `terraform/env/dev`: 開発環境のroot module（HCP Terraform workspace: `spa-infra-dev`）
+- `terraform/modules/network`: VPC、subnet、各機能のSecurity Groupとルールを一元管理するmodule
+- `terraform/modules/{database,api,api_gateway,auth,frontend}`: 機能別module
+- 6つのmoduleをroot moduleから呼び出して管理する。database、api、api_gateway、frontendも有効で、plan/applyによりAWSリソースが作成される。
+
+検証とplanは `terraform/env/dev` で実行する。HCP Terraform workspaceのWorking Directoryも `terraform/env/dev` に設定する。Entra IDの値とCognito設定はHCP Terraform workspace variables（または対応する `TF_VAR_...` 環境変数）から渡し、client secretはSensitiveにする。
+network、database、api、api_gateway、auth、frontendの各moduleをroot moduleから呼び出している。
+
+既存のstateはHCP Terraform workspace `01_core_infra` と `03_landing_zone` に分かれている。統合後のworkspace `spa-infra-dev` に両方のstateを移行し、planで既存リソースの意図しない作成・削除がないことを確認してからapplyする。`moved`ブロックは同一state内のアドレス変更に対応するもので、workspace間のstate移行そのものは行わない。
 
 ### 構成図
 xxx
 
 ### CognitoとEntra IDのフェデレーション
 
-`terraform/01_core_infra/env/dev/02_spa_auth.tf` は、Cognito Hosted UI と Microsoft Entra ID の OIDC フェデレーションを定義する。
+`terraform/modules/auth/main.tf` は、Cognito Hosted UI と Microsoft Entra ID の OIDC フェデレーションを定義する。
 
 Entra ID の App registration には、Terraform output の `cognito_entra_idp_response_url` を Web redirect URI として登録する。SPA の redirect URI は `cognito_callback_urls` と `cognito_logout_urls` に設定する。SPA クライアントは Authorization Code flow と PKCE を使用する。
 

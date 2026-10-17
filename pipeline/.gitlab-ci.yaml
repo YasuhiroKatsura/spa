@@ -3,9 +3,6 @@ variables:
   TFLINT_VERSION: "v0.50.0"
   AWS_ENV: "dev"
   CI_SCRIPTS_DIR: "$CI_PROJECT_DIR/pipeline/scripts"
-  LAYER_01: "01_core_infra"
-  LAYER_02: "02_observability"
-  LAYER_03: "03_landing_zone"
 
 # TFLint pluginのダウンロード結果をキャッシュ
 cache:
@@ -27,15 +24,15 @@ tflint:
     entrypoint: [""]
   script:
     - echo "test" # XXX 後で消す
-    # - $CI_SCRIPTS_DIR/tflint.sh $AWS_ENV $TARGET_LAYER
+    # - $CI_SCRIPTS_DIR/tflint.sh $AWS_ENV
   # parallel:
   #   matrix:
-  #     - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
+  #     - AWS_ENV: ["dev"]
   # rules:
   #   - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
   # parallel:
   #   matrix:
-  #     - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
+  #     - AWS_ENV: ["dev"]
 
 # terraform-fmt:
 #   stage: lint
@@ -53,9 +50,9 @@ tflint:
 #     name: hashicorp/terraform:latest
 #     entrypoint: [""]
 #   script:
-#     - $CI_PROJECT_DIR/pipeline/scripts/validate.sh $AWS_ENV $TARGET_LAYER
+#   - $CI_PROJECT_DIR/pipeline/scripts/validate.sh $AWS_ENV
 #   rules:
     # - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
 #   parallel:
 #     matrix:
-#       - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
+#     - AWS_ENV: ["dev"]
