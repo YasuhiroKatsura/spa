@@ -18,4 +18,10 @@ terraform {
 
 provider "aws" {
   region = var.common.region
+
+  default_tags {
+    tags = {
+      ProjectName = var.common.project_name
+    }
+  }
 }

@@ -1,3 +1,28 @@
+resource "aws_security_group" "vpc_link" {
+  name        = "${var.common.project_name}-sg-on-vpc-link"
+  description = "Security group for the API Gateway VPC Link"
+  vpc_id      = var.vpc_id
+  egress      = []
+}
+
+resource "aws_vpc_security_group_ingress_rule" "api_alb_from_vpc_link" {
+  security_group_id            = var.api_alb_security_group_id
+  description                  = "Allow API Gateway VPC Link traffic"
+  referenced_security_group_id = aws_security_group.vpc_link.id
+  from_port                    = 80
+  to_port                      = 80
+  ip_protocol                  = "tcp"
+}
+
+resource "aws_vpc_security_group_egress_rule" "vpc_link_to_alb" {
+  security_group_id            = aws_security_group.vpc_link.id
+  description                  = "Allow API Gateway VPC Link traffic to the API load balancer"
+  referenced_security_group_id = var.api_alb_security_group_id
+  from_port                    = 80
+  to_port                      = 80
+  ip_protocol                  = "tcp"
+}
+
 resource "aws_apigatewayv2_api" "api" {
   name          = "${var.common.project_name}-apigw-to-ecs4api"
   protocol_type = "HTTP"
@@ -29,5 +54,5 @@ resource "aws_apigatewayv2_integration" "api" {
 resource "aws_apigatewayv2_vpc_link" "api" {
   name               = "${var.common.project_name}-vpclink-to-ecs4api"
   subnet_ids         = var.private_subnet_ids
-  security_group_ids = [var.vpc_link_security_group_id]
+  security_group_ids = [aws_security_group.vpc_link.id]
 }

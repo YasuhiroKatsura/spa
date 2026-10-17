@@ -3,6 +3,19 @@ data "aws_subnet" "selected" {
   id       = each.value
 }
 
+resource "aws_security_group" "database" {
+  name        = "${var.common.project_name}-sg-on-rds-aurora"
+  description = "Security group for Aurora PostgreSQL"
+  vpc_id      = var.vpc_id
+  egress      = []
+}
+
+resource "aws_vpc_security_group_egress_rule" "database_all" {
+  security_group_id = aws_security_group.database.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+
 resource "aws_rds_cluster" "aurora" {
   cluster_identifier          = "${var.common.project_name}-aurora-cluster"
   engine                      = "aurora-postgresql"
@@ -11,7 +24,7 @@ resource "aws_rds_cluster" "aurora" {
   master_username             = "postgres"
   manage_master_user_password = true
   db_subnet_group_name        = aws_db_subnet_group.aurora.name
-  vpc_security_group_ids      = [var.security_group_id]
+  vpc_security_group_ids      = [aws_security_group.database.id]
 
   backup_retention_period      = var.settings.backup_retention_days
   preferred_backup_window      = "03:00-04:00"

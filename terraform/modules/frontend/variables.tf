@@ -12,10 +12,3 @@ variable "public_subnet_ids" {
 variable "vpc_id" {
   type = string
 }
-
-variable "security_group_ids" {
-  type = object({
-    alb      = string
-    endpoint = string
-  })
-}

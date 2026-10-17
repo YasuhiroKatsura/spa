@@ -1,8 +1,52 @@
+resource "aws_security_group" "api_tasks" {
+  name        = "${var.common.project_name}-sg-on-ecs-service4api"
+  description = "Security group for the API ECS service"
+  vpc_id      = var.vpc_id
+  egress      = []
+}
+
+resource "aws_security_group" "api_alb" {
+  name        = "${var.common.project_name}-sg-on-alb-to-ecs4api"
+  description = "Security group for the private API load balancer"
+  vpc_id      = var.vpc_id
+  egress      = []
+}
+
+resource "aws_vpc_security_group_ingress_rule" "api_tasks_from_alb" {
+  security_group_id            = aws_security_group.api_tasks.id
+  description                  = "Allow API load balancer traffic to ECS tasks"
+  referenced_security_group_id = aws_security_group.api_alb.id
+  from_port                    = 80
+  to_port                      = 80
+  ip_protocol                  = "tcp"
+}
+
+resource "aws_vpc_security_group_egress_rule" "api_tasks_all" {
+  security_group_id = aws_security_group.api_tasks.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+
+resource "aws_vpc_security_group_egress_rule" "api_alb_all" {
+  security_group_id = aws_security_group.api_alb.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "database_from_api" {
+  security_group_id            = var.database.security_group_id
+  description                  = "Allow PostgreSQL connections from the API tasks"
+  referenced_security_group_id = aws_security_group.api_tasks.id
+  from_port                    = 5432
+  to_port                      = 5432
+  ip_protocol                  = "tcp"
+}
+
 resource "aws_lb" "api" {
   name               = "${var.common.project_name}-alb-to-ecs4api"
   internal           = true
   load_balancer_type = "application"
-  security_groups    = [var.security_group_ids.api_alb]
+  security_groups    = [aws_security_group.api_alb.id]
   subnets            = var.alb_subnet_ids
 
   enable_deletion_protection = false
@@ -49,7 +93,7 @@ resource "aws_ecs_task_definition" "api" {
   execution_role_arn       = aws_iam_role.task_execution.arn
   task_role_arn            = aws_iam_role.task.arn
 
-  container_definitions = templatefile("${path.module}/ecs_task4api.json", {
+  container_definitions = templatefile("${path.module}/templates/ecs_task4api.json", {
     name          = "${var.common.project_name}-ecs-container-4api"
     image_tag     = var.settings.image_tag
     db_host       = var.database.endpoint
@@ -79,7 +123,7 @@ resource "aws_ecs_service" "api" {
 
   network_configuration {
     subnets          = var.ecs_subnet_ids
-    security_groups  = [var.security_group_ids.api_tasks]
+    security_groups  = [aws_security_group.api_tasks.id]
     assign_public_ip = false
   }
 
@@ -95,7 +139,7 @@ resource "aws_ecs_service" "api" {
 resource "aws_iam_role" "task_execution" {
   name = "${var.common.project_name}-ecs-task-execution-role-4api"
 
-  assume_role_policy = templatefile("${path.module}/trust_policy.json", {
+  assume_role_policy = templatefile("${path.module}/templates/trust_policy.json", {
     service = "ecs-tasks.amazonaws.com"
   })
 }
@@ -108,7 +152,7 @@ resource "aws_iam_role_policy_attachment" "task_execution" {
 resource "aws_iam_role" "task" {
   name = "${var.common.project_name}-ecs-task-role-4api"
 
-  assume_role_policy = templatefile("${path.module}/trust_policy.json", {
+  assume_role_policy = templatefile("${path.module}/templates/trust_policy.json", {
     service = "ecs-tasks.amazonaws.com"
   })
 }
@@ -121,5 +165,5 @@ resource "aws_iam_role_policy_attachment" "task_ssm" {
 resource "aws_iam_role_policy" "task_ssm_messages" {
   name   = "${var.common.project_name}-ecs-task-role-execute-command-policy-4api"
   role   = aws_iam_role.task.id
-  policy = templatefile("${path.module}/policy_connect_ssm.json", {})
+  policy = templatefile("${path.module}/templates/policy_connect_ssm.json", {})
 }

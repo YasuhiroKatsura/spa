@@ -17,20 +17,14 @@ variable "ecs_subnet_ids" {
   type = list(string)
 }
 
-variable "security_group_ids" {
-  type = object({
-    api_tasks = string
-    api_alb   = string
-  })
-}
-
 variable "database" {
   type = object({
-    endpoint        = string
-    port            = number
-    database_name   = string
-    master_username = string
-    secret_arn      = string
+    endpoint          = string
+    port              = number
+    database_name     = string
+    master_username   = string
+    secret_arn        = string
+    security_group_id = string
   })
 }
 

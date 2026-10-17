@@ -5,7 +5,7 @@ variable "common" {
   })
 }
 
-variable "network" {
+variable "network_conf" {
   type = object({
     vpc = object({
       cidr_block = string
@@ -19,7 +19,7 @@ variable "network" {
   })
 }
 
-variable "spa_api" {
+variable "container_conf" {
   type = object({
     task_cpu      = number
     task_memory   = number
@@ -28,7 +28,7 @@ variable "spa_api" {
   })
 }
 
-variable "spa_db" {
+variable "db_conf" {
   type = object({
     engine_version               = string
     instance_class               = string
@@ -40,7 +40,7 @@ variable "spa_db" {
   })
 }
 
-variable "spa_apigw" {
+variable "apigw_conf" {
   type = object({
     stage       = string
     auto_deploy = bool

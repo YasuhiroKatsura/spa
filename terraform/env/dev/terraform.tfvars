@@ -3,7 +3,7 @@ common = {
   region       = "ap-northeast-1"
 }
 
-network = {
+network_conf = {
   vpc = {
     cidr_block = "10.0.0.0/16"
   }
@@ -36,14 +36,14 @@ network = {
   }
 }
 
-spa_api = {
+container_conf = {
   task_cpu      = 256
   task_memory   = 512
   image_tag     = "alpine"
   desired_count = 1
 }
 
-spa_db = {
+db_conf = {
   engine_version               = "17.7"
   instance_class               = "db.t3.micro"
   instance_count               = 1
@@ -53,7 +53,7 @@ spa_db = {
   performance_insights_enabled = false
 }
 
-spa_apigw = {
+apigw_conf = {
   stage       = "dev"
   auto_deploy = true
 }
