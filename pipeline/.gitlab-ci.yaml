@@ -30,6 +30,11 @@ tflint:
   parallel:
     matrix:
       - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
+  parallel:
+    matrix:
+      - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
 
 terraform-fmt:
   stage: lint
@@ -37,8 +42,9 @@ terraform-fmt:
     name: hashicorp/terraform:${TERRAFORM_VERSION}
     entrypoint: [""]
   script:
-    - terraform fmt -check -diff -recursive terraform/ # XXX
-
+    - terraform fmt -check -diff -recursive terraform/ # XXX  # 修正項目がある場合はexit code 3を吐いて停止
+rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
 
 # main_validate_job:
 #   stage: test
@@ -48,7 +54,7 @@ terraform-fmt:
 #   script:
 #     - $CI_PROJECT_DIR/pipeline/scripts/validate.sh $AWS_ENV $TARGET_LAYER
 #   rules:
-#     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト後（Merge前）のみ実行
+    # - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
 #   parallel:
 #     matrix:
 #       - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
