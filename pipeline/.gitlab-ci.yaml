@@ -5,24 +5,34 @@ variables:
   LAYER_02: "02_observability"
   LAYER_03: "03_landing_zone"
 
+# TFLint pluginのダウンロード結果をキャッシュ
+cache:
+  key: tflint-${CI_COMMIT_REF_SLUG} # branchごとにキャッシュを分ける
+  paths:
+    - .tflint.d/plugins/
+
 stages:
   - lint
 
-default:
-  image: 
-    name: hashicorp/terraform:latest
-    entrypoint: [""]
+# default:
+#   image: 
+#     name: hashicorp/terraform:latest
+#     entrypoint: [""]
 
 before_script:
   - echo "Adding execute permission to scripts"
   - chmod +x $CI_PROJECT_DIR/pipeline/scripts/*
 
-lint_terraform:
+tflint:
   stage: lint
-
+  image:
+    name: ghcr.io/terraform-linters/tflint:${TFLINT_VERSION}
+    entrypoint: [""]
   script:
-    - $CI_SCRIPTS_DIR/terraform_lint.sh 
-
+    - $CI_SCRIPTS_DIR/tflint.sh $AWS_ENV $TARGET_LAYER
+  parallel:
+    matrix:
+      - TARGET_LAYER: [$LAYER_01, $LAYER_02, $LAYER_03]
 
 
 
