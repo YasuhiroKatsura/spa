@@ -140,9 +140,10 @@ sg_conf = {
 iam_conf = {
   roles = {
     task_execution = {
-      name                = "spa-ecs-task-execution-role-4api"
-      description         = "ECS AgentがTask実行するための権限"
-      assume_role_service = "ecs-tasks.amazonaws.com"
+      name                    = "spa-ecs-task-execution-role-4api"
+      description             = "ECS AgentがTask実行するための権限"
+      assume_role_policy_file = "trust_policy_task.json"
+      assume_role_service     = "ecs-tasks.amazonaws.com"
     }
     task = {
       name                    = "spa-ecs-task-role-4api"

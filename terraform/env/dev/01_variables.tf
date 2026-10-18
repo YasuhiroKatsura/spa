@@ -46,9 +46,10 @@ variable "sg_conf" {
 variable "iam_conf" {
   type = object({
     roles = map(object({ # IAM Roleの定義
-      name                = string
-      description         = string
-      assume_role_service = string # IAM Roleを引き受けるサービスのARN
+      name                    = string
+      description             = string
+      assume_role_policy_file = string
+      assume_role_service     = string # IAM Roleを引き受けるサービスのARN
     }))
 
     inline_policies = map(object({ # インラインポリシーの定義
