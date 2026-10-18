@@ -1,4 +1,4 @@
-resource "aws_cognito_user_pool" "this" {
+resource "aws_cognito_user_pool" "auth" {
   name = "${var.common.project_name}-${var.common.env}"
 
   username_attributes      = ["email"]
@@ -12,8 +12,8 @@ resource "aws_cognito_user_pool" "this" {
   }
 }
 
-resource "aws_cognito_identity_provider" "this" {
-  user_pool_id  = aws_cognito_user_pool.this.id
+resource "aws_cognito_identity_provider" "auth" {
+  user_pool_id  = aws_cognito_user_pool.auth.id
   provider_name = "EntraID"
   provider_type = "OIDC"
 
@@ -36,9 +36,9 @@ resource "aws_cognito_identity_provider" "this" {
   }
 }
 
-resource "aws_cognito_user_pool_client" "this" {
+resource "aws_cognito_user_pool_client" "auth" {
   name         = "${var.common.project_name}-${var.common.env}"
-  user_pool_id = aws_cognito_user_pool.this.id
+  user_pool_id = aws_cognito_user_pool.auth.id
 
   generate_secret = false
 
@@ -47,16 +47,16 @@ resource "aws_cognito_user_pool_client" "this" {
   allowed_oauth_scopes                 = ["openid", "email", "profile"]
   callback_urls                        = ["http://localhost:8080/"]
   logout_urls                          = ["http://localhost:8080/"]
-  supported_identity_providers         = ["COGNITO", aws_cognito_identity_provider.this.provider_name]
+  supported_identity_providers         = ["COGNITO", aws_cognito_identity_provider.auth.provider_name]
 }
 
-resource "aws_cognito_user_pool_domain" "this" {
+resource "aws_cognito_user_pool_domain" "auth" {
   domain       = "${var.common.project_name}-${var.common.env}-auth"
-  user_pool_id = aws_cognito_user_pool.this.id
+  user_pool_id = aws_cognito_user_pool.auth.id
 }
 
-resource "aws_cognito_managed_login_branding" "this" {
-  user_pool_id                = aws_cognito_user_pool.this.id
-  client_id                   = aws_cognito_user_pool_client.this.id
+resource "aws_cognito_managed_login_branding" "auth" {
+  user_pool_id                = aws_cognito_user_pool.auth.id
+  client_id                   = aws_cognito_user_pool_client.auth.id
   use_cognito_provided_values = true
 }

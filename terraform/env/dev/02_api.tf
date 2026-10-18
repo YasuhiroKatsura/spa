@@ -1,32 +1,32 @@
-resource "aws_apigatewayv2_api" "this" {
+resource "aws_apigatewayv2_api" "api" {
   name          = "${var.common.project_name}-${var.common.env}"
   protocol_type = "HTTP"
 }
 
-resource "aws_apigatewayv2_stage" "this" {
+resource "aws_apigatewayv2_stage" "api" {
   api_id      = aws_apigatewayv2_api.api.id
   name        = "dev"
   auto_deploy = true
 }
 
-resource "aws_apigatewayv2_route" "default" {
+resource "aws_apigatewayv2_route" "api" {
   api_id    = aws_apigatewayv2_api.api.id
   route_key = "$default"
   target    = "integrations/${aws_apigatewayv2_integration.api.id}"
 }
 
-resource "aws_apigatewayv2_integration" "this" {
+resource "aws_apigatewayv2_integration" "api" {
   api_id                 = aws_apigatewayv2_api.api.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
-  integration_uri        = aws_lb_listener.ecs.arn
+  integration_uri        = aws_lb_listener.api.arn
   connection_type        = "VPC_LINK"
   connection_id          = aws_apigatewayv2_vpc_link.api.id
   payload_format_version = "1.0"
   timeout_milliseconds   = 30000
 }
 
-resource "aws_apigatewayv2_vpc_link" "this" {
+resource "aws_apigatewayv2_vpc_link" "api" {
   name = "${var.common.project_name}-${var.common.env}-for-apigw"
   subnet_ids = [
     module.vpc.subnet.private_subnet_ids_by_name.alb_a,
@@ -35,7 +35,7 @@ resource "aws_apigatewayv2_vpc_link" "this" {
   security_group_ids = [module.sg.id["vpc_link_for_apigw"]]
 }
 
-resource "aws_lb" "ecs" {
+resource "aws_lb" "api" {
   name               = "${var.common.project_name}-${var.common.env}-to-ecs"
   internal           = true
   load_balancer_type = "application"
@@ -48,7 +48,7 @@ resource "aws_lb" "ecs" {
   enable_deletion_protection = false
 }
 
-resource "aws_lb_target_group" "ecs" {
+resource "aws_lb_target_group" "api" {
   name        = "${var.common.project_name}-${var.common.env}-to-ecs"
   port        = 80
   protocol    = "HTTP"
@@ -65,22 +65,22 @@ resource "aws_lb_target_group" "ecs" {
   }
 }
 
-resource "aws_lb_listener" "ecs" {
-  load_balancer_arn = aws_lb.ecs.arn
+resource "aws_lb_listener" "api" {
+  load_balancer_arn = aws_lb.api.arn
   port              = 80
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.ecs.arn
+    target_group_arn = aws_lb_target_group.api.arn
   }
 }
 
-resource "aws_ecs_cluster" "this" {
+resource "aws_ecs_cluster" "api" {
   name = "${var.common.project_name}-${var.common.env}"
 }
 
-resource "aws_ecs_task_definition" "main" {
+resource "aws_ecs_task_definition" "api_main" {
   family                   = "${var.common.project_name}-${var.common.env}-main"
   cpu                      = var.api_ecs_conf.api.task_cpu
   memory                   = var.api_ecs_conf.api.task_memory
@@ -92,11 +92,11 @@ resource "aws_ecs_task_definition" "main" {
   container_definitions = templatefile(
     "${path.root}/templates/${var.api_ecs_conf.api.container_def_file}",
     {
-      db_host       = aws_rds_cluster.aurora.endpoint
-      db_port       = tostring(aws_rds_cluster.aurora.port)
-      db_name       = aws_rds_cluster.aurora.database_name
-      db_user       = aws_rds_cluster.aurora.master_username
-      db_secret_arn = aws_rds_cluster.aurora.master_user_secret[0].secret_arn
+      db_host       = aws_rds_cluster.database.endpoint
+      db_port       = tostring(aws_rds_cluster.database.port)
+      db_name       = aws_rds_cluster.database.database_name
+      db_user       = aws_rds_cluster.database.master_username
+      db_secret_arn = aws_rds_cluster.database.master_user_secret[0].secret_arn
     }
   )
 
@@ -106,11 +106,11 @@ resource "aws_ecs_task_definition" "main" {
   }
 }
 
-resource "aws_ecs_service" "main" {
+resource "aws_ecs_service" "api_main" {
   name                   = "${var.common.project_name}-${var.common.env}-main"
-  cluster                = aws_ecs_cluster.this.id
-  task_definition        = aws_ecs_task_definition.main.arn
-  desired_count          = var.ecs_conf.api.desired_count
+  cluster                = aws_ecs_cluster.api.id
+  task_definition        = aws_ecs_task_definition.api_main.arn
+  desired_count          = var.api_ecs_conf.api.desired_count
   enable_execute_command = true
 
   capacity_provider_strategy {
@@ -125,10 +125,10 @@ resource "aws_ecs_service" "main" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.ecs.arn
-    container_name   = var.ecs_conf.api.container_conf.name
+    target_group_arn = aws_lb_target_group.api.arn
+    container_name   = var.api_ecs_conf.api.container_conf.name
     container_port   = 80
   }
 
-  depends_on = [aws_lb_listener.ecs]
+  depends_on = [aws_lb_listener.api]
 }

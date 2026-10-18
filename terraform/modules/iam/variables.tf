@@ -8,7 +8,7 @@ variable "iam_conf" {
     inline_policies = map(object({
       name        = string
       role_key    = string
-      policy_file = string
+      inline_policy_file = string
     }))
     managed_policy_attachments = map(object({
       role_key   = string

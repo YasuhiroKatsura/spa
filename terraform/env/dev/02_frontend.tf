@@ -36,7 +36,7 @@ resource "aws_vpc_endpoint" "s3" {
   security_group_ids = [module.sg.id["vpc_endpt_to_frontend"]]
 }
 
-data "aws_network_interface" "s3_endpoint" {
+data "aws_network_interface" "vpc_endpt_s3" {
   for_each = toset(aws_vpc_endpoint.s3.network_interface_ids)
   id       = each.value
 }
@@ -77,7 +77,7 @@ resource "aws_lb_target_group" "frontend" {
 }
 
 resource "aws_lb_target_group_attachment" "frontend" {
-  for_each = data.aws_network_interface.s3_endpoint
+  for_each = data.aws_network_interface.vpc_endpt_s3
 
   target_group_arn = aws_lb_target_group.frontend.arn
   target_id        = each.value.private_ip

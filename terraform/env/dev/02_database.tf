@@ -1,4 +1,4 @@
-data "aws_subnet" "this" {
+data "aws_subnet" "database" {
   for_each = toset([
     module.vpc.subnet.private_subnet_ids_by_name.aurora_a,
     module.vpc.subnet.private_subnet_ids_by_name.aurora_c,
@@ -6,14 +6,14 @@ data "aws_subnet" "this" {
   id = each.value
 }
 
-resource "aws_rds_cluster" "this" {
+resource "aws_rds_cluster" "database" {
   cluster_identifier          = "${var.common.project_name}-${var.common.env}"
   engine                      = "aurora-postgresql"
   engine_version              = var.database_rds_conf.engine_version
   database_name               = "${var.common.project_name}-${var.common.env}"
   master_username             = "postgres"
   manage_master_user_password = true
-  db_subnet_group_name        = aws_db_subnet_group.aurora.name
+  db_subnet_group_name        = aws_db_subnet_group.database.name
   vpc_security_group_ids      = [module.sg.id["rds"]]
 
   backup_retention_period      = var.database_rds_conf.backup_retention_days
@@ -24,18 +24,18 @@ resource "aws_rds_cluster" "this" {
   skip_final_snapshot          = var.database_rds_conf.skip_final_snapshot
 }
 
-resource "aws_rds_cluster_instance" "this" {
+resource "aws_rds_cluster_instance" "database" {
   count              = var.database_rds_conf.instance_count
-  cluster_identifier = aws_rds_cluster.this.id
+  cluster_identifier = aws_rds_cluster.database.id
   instance_class     = var.database_rds_conf.instance_class
-  engine             = aws_rds_cluster.this.engine
-  engine_version     = aws_rds_cluster.this.engine_version
+  engine             = aws_rds_cluster.database.engine
+  engine_version     = aws_rds_cluster.database.engine_version
 
   performance_insights_enabled = var.database_rds_conf.performance_insights_enabled
   auto_minor_version_upgrade   = true
 }
 
-resource "aws_db_subnet_group" "this" {
+resource "aws_db_subnet_group" "database" {
   name = "${var.common.project_name}-${var.common.env}"
   subnet_ids = [
     module.vpc.subnet.private_subnet_ids_by_name.aurora_a,
@@ -44,7 +44,7 @@ resource "aws_db_subnet_group" "this" {
 
   lifecycle {
     precondition {
-      condition     = alltrue([for subnet in data.aws_subnet.this : subnet.vpc_id == module.vpc.vpc.id])
+      condition     = alltrue([for subnet in data.aws_subnet.database : subnet.vpc_id == module.vpc.vpc.id])
       error_message = "All database subnets must belong to the configured VPC."
     }
   }
