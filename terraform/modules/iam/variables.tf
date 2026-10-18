@@ -1,3 +1,10 @@
+variable "common" {
+  type = object({
+    project_name = string
+    region       = string
+  })
+}
+
 variable "iam_conf" {
   type = object({
     roles = map(object({
