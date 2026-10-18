@@ -5,6 +5,7 @@ frontend_s3_conf = {
 
 api_ecs_conf = {
   main = {
+    name               = "main"
     task_cpu           = 256
     task_memory        = 512
     desired_count      = 1

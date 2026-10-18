@@ -81,7 +81,7 @@ resource "aws_ecs_cluster" "api" {
 }
 
 resource "aws_ecs_task_definition" "api_main" {
-  family                   = "${var.common.project_name}-${var.api_ecs_conf.main.key}"
+  family                   = "${var.common.project_name}-${var.api_ecs_conf.main.name}"
   cpu                      = var.api_ecs_conf.main.task_cpu
   memory                   = var.api_ecs_conf.main.task_memory
   network_mode             = "awsvpc"
@@ -92,7 +92,7 @@ resource "aws_ecs_task_definition" "api_main" {
   container_definitions = templatefile(
     "${path.root}/templates/${var.api_ecs_conf.main.container_def_file}",
     {
-      name          = "${var.common.project_name}-${var.api_ecs_conf.main.key}"
+      name          = "${var.common.project_name}-${var.api_ecs_conf.main.name}"
       db_host       = aws_rds_cluster.database.endpoint
       db_port       = tostring(aws_rds_cluster.database.port)
       db_name       = aws_rds_cluster.database.database_name
@@ -108,7 +108,7 @@ resource "aws_ecs_task_definition" "api_main" {
 }
 
 resource "aws_ecs_service" "api_main" {
-  name                   = "${var.common.project_name}-${var.api_ecs_conf.main.key}"
+  name                   = "${var.common.project_name}-${var.api_ecs_conf.main.name}"
   cluster                = aws_ecs_cluster.api.id
   task_definition        = aws_ecs_task_definition.api_main.arn
   desired_count          = var.api_ecs_conf.main.desired_count
@@ -127,7 +127,7 @@ resource "aws_ecs_service" "api_main" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.api.arn
-    container_name   = "${var.common.project_name}-${var.api_ecs_conf.main.key}"
+    container_name   = "${var.common.project_name}-${var.api_ecs_conf.main.name}"
     container_port   = 80
   }
 
