@@ -1,4 +1,12 @@
 
+resource_flags = {
+  api_tasks_enabled     = false
+  api_stack_enabled     = false
+  frontend_edge_enabled = false
+  s3_enabled            = false
+  rds_enabled           = false
+}
+
 frontend_s3_conf = {
   bucket_policy_file = "bucket_policy_frontend.json"
 }
