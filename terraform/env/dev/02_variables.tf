@@ -11,7 +11,6 @@ variable "api_ecs_conf" {
     task_memory        = number
     desired_count      = number
     container_def_file = string
-    container_conf     = map(string)
   }))
 }
 

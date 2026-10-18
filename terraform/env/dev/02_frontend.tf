@@ -37,8 +37,17 @@ resource "aws_vpc_endpoint" "s3" {
 }
 
 data "aws_network_interface" "vpc_endpt_s3" {
-  for_each = toset(aws_vpc_endpoint.s3.network_interface_ids)
-  id       = each.value
+  for_each = var.vpc_conf.public_subnets
+
+  filter {
+    name   = "vpc-endpoint-id"
+    values = [aws_vpc_endpoint.s3.id]
+  }
+
+  filter {
+    name   = "subnet-id"
+    values = [module.vpc.subnet.public_subnet_ids_by_name[each.key]]
+  }
 }
 
 resource "aws_lb" "frontend" {
