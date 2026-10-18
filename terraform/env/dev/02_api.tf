@@ -39,7 +39,7 @@ resource "aws_lb" "api" {
   name               = "${var.common.project_name}-${var.common.env}-to-ecs"
   internal           = true
   load_balancer_type = "application"
-  security_groups    = [module.sg.id["alb_to_ecs"]]
+  security_groups    = [module.sg.id["api_alb"]]
   subnets = [
     module.vpc.subnet.private_subnet_ids_by_name.alb_a,
     module.vpc.subnet.private_subnet_ids_by_name.alb_c,
@@ -120,7 +120,7 @@ resource "aws_ecs_service" "api_main" {
 
   network_configuration {
     subnets          = [module.vpc.subnet.private_subnet_ids_by_name.ecs_a]
-    security_groups  = [module.sg.id["ecs_service_api"]]
+    security_groups  = [module.sg.id["ecs_service_main"]]
     assign_public_ip = false
   }
 

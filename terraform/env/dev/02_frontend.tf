@@ -33,7 +33,7 @@ resource "aws_vpc_endpoint" "s3" {
   service_name       = "com.amazonaws.${var.common.region}.s3"
   vpc_endpoint_type  = "Interface"
   subnet_ids         = module.vpc.subnet.public_subnet_ids
-  security_group_ids = [module.sg.id["vpc_endpt_to_frontend"]]
+  security_group_ids = [module.sg.id["vpc_endpt_for_s3"]]
 }
 
 data "aws_network_interface" "vpc_endpt_s3" {
