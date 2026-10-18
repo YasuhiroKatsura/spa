@@ -1,6 +1,6 @@
 
 frontend_s3_conf = {
-  bucket_policy_file = "bucket_policy_AllowVpcEndpointAccess.json"
+  bucket_policy_file = "bucket_policy_frontend.json"
 }
 
 api_ecs_conf = {
@@ -8,11 +8,7 @@ api_ecs_conf = {
     task_cpu           = 256
     task_memory        = 512
     desired_count      = 1
-    container_def_file = "ecs_task4api.json"
-    container_conf = {
-      name      = "spa-ecs-container-4api"
-      image_tag = "alpine"
-    }
+    container_def_file = "container_def_main.json"
   }
 }
 

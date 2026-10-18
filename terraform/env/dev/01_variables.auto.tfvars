@@ -147,7 +147,7 @@ iam_conf = {
     task = {
       name                    = "spa-ecs-task-role-4api"
       description             = "ECS TaskがAWSリソースにアクセスするための権限"
-      assume_role_policy_file = "policy_connect_ssm.json"
+      assume_role_policy_file = "trust_policy_task.json"
       assume_role_service     = "ecs-tasks.amazonaws.com"
     }
   }
@@ -156,7 +156,7 @@ iam_conf = {
     task_ssm_connection = { # ECS TaskにSSMのSendCommandを許可するポリシーを付与
       name               = "spa-ecs-task-role-execute-command-policy-4api"
       role_key           = "task"
-      inline_policy_file = "policy_connect_ssm.json"
+      inline_policy_file = "inline_policy_task_ssm_connection.json"
     }
   }
 

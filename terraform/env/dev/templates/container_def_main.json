@@ -1,7 +1,7 @@
 [
   {
-    "name": "${container_conf.name}",
-    "image": "public.ecr.aws/nginx/nginx:${container_conf.image_tag}",
+    "name": "spa-api-main",
+    "image": "public.ecr.aws/nginx/nginx:alpine",
     "essential": true,
     "portMappings": [
       {

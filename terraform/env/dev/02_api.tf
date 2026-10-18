@@ -92,7 +92,6 @@ resource "aws_ecs_task_definition" "main" {
   container_definitions = templatefile(
     "${path.root}/templates/${var.api_ecs_conf.api.container_def_file}",
     {
-      container_conf = var.api_ecs_conf.api.container_conf
       db_host       = aws_rds_cluster.aurora.endpoint
       db_port       = tostring(aws_rds_cluster.aurora.port)
       db_name       = aws_rds_cluster.aurora.database_name
