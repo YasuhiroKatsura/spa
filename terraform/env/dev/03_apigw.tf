@@ -1,12 +1,12 @@
 resource "aws_apigatewayv2_api" "api" {
-  name          = "${local.common.project_name}-apigw-to-ecs4api"
+  name          = "${var.common.project_name}-apigw-to-ecs4api"
   protocol_type = "HTTP"
 }
 
 resource "aws_apigatewayv2_stage" "api" {
   api_id      = aws_apigatewayv2_api.api.id
-  name        = local.apigw_conf.stage
-  auto_deploy = local.apigw_conf.auto_deploy
+  name        = var.apigw_conf.stage
+  auto_deploy = var.apigw_conf.auto_deploy
 }
 
 resource "aws_apigatewayv2_route" "default" {
@@ -27,10 +27,10 @@ resource "aws_apigatewayv2_integration" "api" {
 }
 
 resource "aws_apigatewayv2_vpc_link" "api" {
-  name = "${local.common.project_name}-vpclink-to-ecs4api"
+  name = "${var.common.project_name}-vpclink-to-ecs4api"
   subnet_ids = [
     module.vpc.subnet.private_subnet_ids_by_name.alb_a,
     module.vpc.subnet.private_subnet_ids_by_name.alb_c,
   ]
-  security_group_ids = [module.sg.security_group_ids.api_gateway_vpc_link]
+  security_group_ids = [module.sg.id["api_gateway_vpc_link"]]
 }

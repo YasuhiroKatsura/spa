@@ -1,7 +1,7 @@
 data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "frontend" {
-  bucket = "${local.common.project_name}-frontend-${data.aws_caller_identity.current.account_id}-${local.common.region}"
+  bucket = "${var.common.project_name}-frontend-${data.aws_caller_identity.current.account_id}-${var.common.region}"
 }
 
 resource "aws_s3_bucket_versioning" "frontend" {
@@ -22,29 +22,18 @@ resource "aws_s3_bucket_public_access_block" "frontend" {
 
 resource "aws_s3_bucket_policy" "frontend" {
   bucket = aws_s3_bucket.frontend.id
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Sid       = "AllowVpcEndpointAccess"
-      Effect    = "Allow"
-      Principal = "*"
-      Action    = "s3:GetObject"
-      Resource  = "${aws_s3_bucket.frontend.arn}/*"
-      Condition = {
-        StringEquals = {
-          "aws:sourceVpce" = aws_vpc_endpoint.s3.id
-        }
-      }
-    }]
+  policy = templatefile("${path.root}/templates/bucket_policy_AllowVpcEndpointAccess.json", {
+    bucket_name     = aws_s3_bucket.frontend.bucket
+    vpc_endpoint_id = aws_vpc_endpoint.s3.id
   })
 }
 
 resource "aws_vpc_endpoint" "s3" {
   vpc_id             = module.vpc.vpc.id
-  service_name       = "com.amazonaws.${local.common.region}.s3"
+  service_name       = "com.amazonaws.${var.common.region}.s3"
   vpc_endpoint_type  = "Interface"
   subnet_ids         = module.vpc.subnet.public_subnet_ids
-  security_group_ids = [module.sg.security_group_ids.frontend_endpoint]
+  security_group_ids = [module.sg.id["frontend_endpoint"]]
 }
 
 data "aws_network_interface" "s3_endpoint" {
@@ -53,10 +42,10 @@ data "aws_network_interface" "s3_endpoint" {
 }
 
 resource "aws_lb" "frontend" {
-  name               = "${local.common.project_name}-alb-to-s34front"
+  name               = "${var.common.project_name}-alb-to-s34front"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [module.sg.security_group_ids.frontend_alb]
+  security_groups    = [module.sg.id["frontend_alb"]]
   subnets            = module.vpc.subnet.public_subnet_ids
 
   enable_deletion_protection = false
@@ -74,7 +63,7 @@ resource "aws_lb_listener" "frontend" {
 }
 
 resource "aws_lb_target_group" "frontend" {
-  name        = "${local.common.project_name}-alb-to-s34front"
+  name        = "${var.common.project_name}-alb-to-s34front"
   port        = 443
   protocol    = "HTTPS"
   vpc_id      = module.vpc.vpc.id

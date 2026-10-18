@@ -1,5 +1,5 @@
 resource "aws_cognito_user_pool" "spa" {
-  name = "${local.common.project_name}-user-pool"
+  name = "${var.common.project_name}-user-pool"
 
   username_attributes      = ["email"]
   auto_verified_attributes = ["email"]
@@ -37,7 +37,7 @@ resource "aws_cognito_identity_provider" "entra" {
 }
 
 resource "aws_cognito_user_pool_client" "spa" {
-  name         = "${local.common.project_name}-spa-client"
+  name         = "${var.common.project_name}-spa-client"
   user_pool_id = aws_cognito_user_pool.spa.id
 
   generate_secret = false
@@ -45,13 +45,13 @@ resource "aws_cognito_user_pool_client" "spa" {
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_scopes                 = ["openid", "email", "profile"]
-  callback_urls                        = local.cognito_callback_urls
-  logout_urls                          = local.cognito_logout_urls
+  callback_urls                        = var.cognito_conf.spa.callback_urls
+  logout_urls                          = var.cognito_conf.spa.logout_urls
   supported_identity_providers         = ["COGNITO", aws_cognito_identity_provider.entra.provider_name]
 }
 
 resource "aws_cognito_user_pool_domain" "spa" {
-  domain       = local.cognito_domain_prefix
+  domain       = var.cognito_conf.spa.domain_prefix
   user_pool_id = aws_cognito_user_pool.spa.id
 }
 

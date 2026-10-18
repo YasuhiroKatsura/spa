@@ -38,7 +38,7 @@ TFLint version 0.61.0
 - `terraform/modules/iam`: ECS task IAM roles and policies
 - `terraform/modules/sg`: 各ワークロードのSecurity Groupとルール
 
-検証とplanは `terraform/env/dev` で実行する。HCP Terraform workspaceのWorking Directoryも `terraform/env/dev` に設定する。環境設定とCognito設定は `0_provide.tf` のlocalsで管理し、Entra IDの値は同ファイルで宣言した入力変数としてHCP Terraform workspace variables（または対応する `TF_VAR_...` 環境変数）から渡す。client secretはSensitiveにする。
+検証とplanは `terraform/env/dev` で実行する。HCP Terraform workspaceのWorking Directoryも `terraform/env/dev` に設定する。変数の型定義は `01_variables.tf`、開発環境の設定値は自動読込される `terraform.tfvars` で管理する。Entra IDの値はHCP Terraform workspace variables（または対応する `TF_VAR_...` 環境変数）から渡し、client secretはSensitiveにする。
 
 既存のstateはHCP Terraform workspace `01_core_infra` と `03_landing_zone` に分かれている。統合後のworkspace `spa-infra-dev` に両方のstateを移行し、planで既存リソースの意図しない作成・削除がないことを確認してからapplyする。`moved`ブロックは同一state内のアドレス変更に対応するもので、workspace間のstate移行そのものは行わない。
 
@@ -88,6 +88,16 @@ CIはGitlab, CDはHCP Terraformという単位でプラットフォームを分�
   5. terraform planの結果に問題がなければ承認する。このタイミングでterraform applyが実行され、stateファイルが更新される。
   6. 問題が生じた場合は過去のstateファイルから戻しを行う。
 
+### Module化
+当プロジェクトにおけるTerraformモジュールは、「複数箇所で参照される共通インフラパーツ（VPC、IAM、共通SG等）のガードレール化」 を目的として作成します。
+
+- モジュール化の条件:
+  - 複数のリソースや環境から一貫した設定で参照されること
+  - variables.tf のパラメータ数が少なく、大半を default 値で隠蔽（カプセル化）できること
+
+- モジュール化しない条件:
+  - アプリケーション固有のリソース（ECS, EC2, RDS等）
+  - 変数の種類が多く、ルート側にそのままパラメータを露出させることになる場合
 
 [managed login page](https://spa-auth.auth.ap-northeast-1.amazoncognito.com/login?client_id=1u3j9e23em0405faeqhr5mb8tm&response_type=code&scope=email+openid+profile&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F)
 

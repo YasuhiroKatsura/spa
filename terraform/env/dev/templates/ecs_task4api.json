@@ -1,0 +1,43 @@
+[
+  {
+    "name": "${container_conf.name}",
+    "image": "public.ecr.aws/nginx/nginx:${container_conf.image_tag}",
+    "essential": true,
+    "portMappings": [
+      {
+        "name": "http",
+        "containerPort": 80,
+        "hostPort": 80,
+        "protocol": "tcp"
+      }
+    ],
+    "environment": [
+      {
+        "name": "DB_HOST",
+        "value": "${db_host}"
+      },
+      {
+        "name": "DB_PORT",
+        "value": "${db_port}"
+      },
+      {
+        "name": "DB_NAME",
+        "value": "${db_name}"
+      },
+      {
+        "name": "DB_USER",
+        "value": "${db_user}"
+      }
+    ],
+    "secrets": [
+      {
+        "name": "DB_PASSWORD",
+        "valueFrom": "${db_secret_arn}:password::"
+      }
+    ],
+    "readonlyRootFilesystem": false,
+    "linuxParameters": {
+      "initProcessEnabled": true
+    }
+  }
+]

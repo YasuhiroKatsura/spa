@@ -5,7 +5,7 @@ variable "common" {
   })
 }
 
-variable "network" {
+variable "vpc_conf" {
   type = object({
     vpc = object({
       cidr_block = string

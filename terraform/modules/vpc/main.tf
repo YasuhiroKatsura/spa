@@ -1,13 +1,13 @@
 # -----VPC-----
 resource "aws_vpc" "this" {
-  cidr_block           = var.network.vpc.cidr_block
+  cidr_block           = var.vpc_conf.vpc.cidr_block
   enable_dns_support   = "true"
   enable_dns_hostnames = "true"
 }
 
 # -----Subnets (public)-----
 resource "aws_subnet" "public" {
-  for_each = var.network.public_subnets
+  for_each = var.vpc_conf.public_subnets
 
   vpc_id                  = aws_vpc.this.id
   cidr_block              = each.value.cidr_block
@@ -20,7 +20,7 @@ resource "aws_subnet" "public" {
 
 # -----Subnets (private)-----
 resource "aws_subnet" "private" {
-  for_each = var.network.private_subnets
+  for_each = var.vpc_conf.private_subnets
 
   vpc_id                  = aws_vpc.this.id
   cidr_block              = each.value.cidr_block
@@ -33,7 +33,7 @@ resource "aws_subnet" "private" {
 
 # -----Internet Gateway-----
 resource "aws_internet_gateway" "this" {
-  count  = length(var.network.public_subnets) > 0 ? 1 : 0 # public snがある場合のみ作成
+  count  = length(var.vpc_conf.public_subnets) > 0 ? 1 : 0 # public snがある場合のみ作成
   vpc_id = aws_vpc.this.id
   tags = {
     Name = "${var.common.project_name}-igw"
@@ -42,7 +42,7 @@ resource "aws_internet_gateway" "this" {
 
 # -----Route Table (public)-----
 resource "aws_route_table" "public" {
-  count  = length(var.network.public_subnets) > 0 ? 1 : 0
+  count  = length(var.vpc_conf.public_subnets) > 0 ? 1 : 0
   vpc_id = aws_vpc.this.id
 
   route {
@@ -56,14 +56,14 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "public" {
-  for_each       = var.network.public_subnets
+  for_each       = var.vpc_conf.public_subnets
   subnet_id      = aws_subnet.public[each.key].id
   route_table_id = aws_route_table.public[0].id
 }
 
 # -----Route Table (private)-----
 resource "aws_route_table" "private" {
-  count  = length(var.network.private_subnets) > 0 ? 1 : 0
+  count  = length(var.vpc_conf.private_subnets) > 0 ? 1 : 0
   vpc_id = aws_vpc.this.id
   tags = {
     Name = "${var.common.project_name}-private-rt"
@@ -71,7 +71,7 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "private" {
-  for_each       = var.network.private_subnets
+  for_each       = var.vpc_conf.private_subnets
   subnet_id      = aws_subnet.private[each.key].id
   route_table_id = aws_route_table.private[0].id
 }
