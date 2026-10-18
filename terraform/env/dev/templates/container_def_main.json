@@ -1,6 +1,6 @@
 [
   {
-    "name": "spa-api-main",
+    "name": "${name}",
     "image": "public.ecr.aws/nginx/nginx:alpine",
     "essential": true,
     "portMappings": [

@@ -7,10 +7,10 @@ data "aws_subnet" "database" {
 }
 
 resource "aws_rds_cluster" "database" {
-  cluster_identifier          = "${var.common.project_name}-${var.common.env}"
+  cluster_identifier          = "${var.common.project_name}"
   engine                      = "aurora-postgresql"
   engine_version              = var.database_rds_conf.engine_version
-  database_name               = "${var.common.project_name}-${var.common.env}"
+  database_name               = "${var.common.project_name}"
   master_username             = "postgres"
   manage_master_user_password = true
   db_subnet_group_name        = aws_db_subnet_group.database.name
@@ -36,7 +36,7 @@ resource "aws_rds_cluster_instance" "database" {
 }
 
 resource "aws_db_subnet_group" "database" {
-  name = "${var.common.project_name}-${var.common.env}"
+  name = "${var.common.project_name}"
   subnet_ids = [
     module.vpc.subnet.private_subnet_ids_by_name.aurora_a,
     module.vpc.subnet.private_subnet_ids_by_name.aurora_c,

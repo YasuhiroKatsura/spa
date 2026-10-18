@@ -1,7 +1,7 @@
 data "aws_caller_identity" "current" {} # AWS環境情報の取得
 
 resource "aws_s3_bucket" "frontend" {
-  bucket = "${var.common.project_name}-${var.common.env}-frontend-${data.aws_caller_identity.current.account_id}"
+  bucket = "${var.common.project_name}-frontend-${data.aws_caller_identity.current.account_id}"
 }
 
 resource "aws_s3_bucket_versioning" "frontend" {
@@ -51,7 +51,7 @@ data "aws_network_interface" "vpc_endpt_s3" {
 }
 
 resource "aws_lb" "frontend" {
-  name               = "${var.common.project_name}-${var.common.env}-to-frontend"
+  name               = "${var.common.project_name}-for-s3"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [module.sg.id["frontend_alb"]]
@@ -72,7 +72,7 @@ resource "aws_lb_listener" "frontend" {
 }
 
 resource "aws_lb_target_group" "frontend" {
-  name        = "${var.common.project_name}-${var.common.env}-to-frontend"
+  name        = "${var.common.project_name}-for-s3"
   port        = 443
   protocol    = "HTTPS"
   vpc_id      = module.vpc.vpc.id
