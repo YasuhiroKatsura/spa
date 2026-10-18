@@ -29,16 +29,16 @@ variable "sg_conf" {
       ip_protocol                   = string
       from_port                     = optional(number)
       to_port                       = optional(number)
-      cidr_ipv4                     = optional(string) # SGで制御する場合はnullに設定
-      referenced_security_group_key = optional(string) # CIDRで制御する場合はnullに設定
+      cidr_ipv4                     = optional(list(string)) # SGで制御する場合はnullに設定
+      referenced_security_group_key = optional(string)       # CIDRで制御する場合はnullに設定
     })), {})
     egress_rules = optional(map(object({
       description                   = string
       ip_protocol                   = string
       from_port                     = optional(number)
       to_port                       = optional(number)
-      cidr_ipv4                     = optional(string) # SGで制御する場合はnullに設定
-      referenced_security_group_key = optional(string) # CIDRで制御する場合はnullに設定
+      cidr_ipv4                     = optional(list(string)) # SGで制御する場合はnullに設定
+      referenced_security_group_key = optional(string)       # CIDRで制御する場合はnullに設定
     })), {})
   }))
 }
@@ -46,9 +46,10 @@ variable "sg_conf" {
 variable "iam_conf" {
   type = object({
     roles = map(object({ # IAM Roleの定義
-      name                = string
-      description         = string
-      assume_role_service = string # IAM Roleを引き受けるサービスのARN
+      name                    = string
+      description             = string
+      assume_role_policy_file = string
+      assume_role_service     = string # IAM Roleを引き受けるサービスのARN
     }))
 
     inline_policies = map(object({ # インラインポリシーの定義

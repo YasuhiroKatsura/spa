@@ -1,5 +1,5 @@
 resource "aws_apigatewayv2_api" "api" {
-  name          = "${var.common.project_name}-${var.common.env}"
+  name          = "${var.common.project_name}"
   protocol_type = "HTTP"
 }
 
@@ -27,7 +27,7 @@ resource "aws_apigatewayv2_integration" "api" {
 }
 
 resource "aws_apigatewayv2_vpc_link" "api" {
-  name = "${var.common.project_name}-${var.common.env}-for-apigw"
+  name = "${var.common.project_name}-for-apigw"
   subnet_ids = [
     module.vpc.subnet.private_subnet_ids_by_name.alb_a,
     module.vpc.subnet.private_subnet_ids_by_name.alb_c,
@@ -36,10 +36,10 @@ resource "aws_apigatewayv2_vpc_link" "api" {
 }
 
 resource "aws_lb" "api" {
-  name               = "${var.common.project_name}-${var.common.env}-to-ecs"
+  name               = "${var.common.project_name}-for-ecs"
   internal           = true
   load_balancer_type = "application"
-  security_groups    = [module.sg.id["alb_to_ecs"]]
+  security_groups    = [module.sg.id["api_alb"]]
   subnets = [
     module.vpc.subnet.private_subnet_ids_by_name.alb_a,
     module.vpc.subnet.private_subnet_ids_by_name.alb_c,
@@ -49,7 +49,7 @@ resource "aws_lb" "api" {
 }
 
 resource "aws_lb_target_group" "api" {
-  name        = "${var.common.project_name}-${var.common.env}-to-ecs"
+  name        = "${var.common.project_name}-for-ecs"
   port        = 80
   protocol    = "HTTP"
   vpc_id      = module.vpc.vpc.id
@@ -77,21 +77,22 @@ resource "aws_lb_listener" "api" {
 }
 
 resource "aws_ecs_cluster" "api" {
-  name = "${var.common.project_name}-${var.common.env}"
+  name = "${var.common.project_name}"
 }
 
 resource "aws_ecs_task_definition" "api_main" {
-  family                   = "${var.common.project_name}-${var.common.env}-main"
-  cpu                      = var.api_ecs_conf.api.task_cpu
-  memory                   = var.api_ecs_conf.api.task_memory
+  family                   = "${var.common.project_name}-${var.api_ecs_conf.main.name}"
+  cpu                      = var.api_ecs_conf.main.task_cpu
+  memory                   = var.api_ecs_conf.main.task_memory
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   execution_role_arn       = module.iam.arn["task_execution"] # ECS AgentがTask実行するための権限
   task_role_arn            = module.iam.arn["task"]           # ECS TaskがAWSリソースにアクセスするための権限
 
   container_definitions = templatefile(
-    "${path.root}/templates/${var.api_ecs_conf.api.container_def_file}",
+    "${path.root}/templates/${var.api_ecs_conf.main.container_def_file}",
     {
+      name          = "${var.common.project_name}-${var.api_ecs_conf.main.name}"
       db_host       = aws_rds_cluster.database.endpoint
       db_port       = tostring(aws_rds_cluster.database.port)
       db_name       = aws_rds_cluster.database.database_name
@@ -107,10 +108,10 @@ resource "aws_ecs_task_definition" "api_main" {
 }
 
 resource "aws_ecs_service" "api_main" {
-  name                   = "${var.common.project_name}-${var.common.env}-main"
+  name                   = "${var.common.project_name}-${var.api_ecs_conf.main.name}"
   cluster                = aws_ecs_cluster.api.id
   task_definition        = aws_ecs_task_definition.api_main.arn
-  desired_count          = var.api_ecs_conf.api.desired_count
+  desired_count          = var.api_ecs_conf.main.desired_count
   enable_execute_command = true
 
   capacity_provider_strategy {
@@ -120,13 +121,13 @@ resource "aws_ecs_service" "api_main" {
 
   network_configuration {
     subnets          = [module.vpc.subnet.private_subnet_ids_by_name.ecs_a]
-    security_groups  = [module.sg.id["ecs_service_api"]]
+    security_groups  = [module.sg.id["ecs_service_main"]]
     assign_public_ip = false
   }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.api.arn
-    container_name   = var.api_ecs_conf.api.container_conf.name
+    container_name   = "${var.common.project_name}-${var.api_ecs_conf.main.name}"
     container_port   = 80
   }
 

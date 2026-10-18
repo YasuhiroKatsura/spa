@@ -7,11 +7,11 @@ variable "frontend_s3_conf" {
 
 variable "api_ecs_conf" {
   type = map(object({
+    name = string
     task_cpu           = number
     task_memory        = number
     desired_count      = number
     container_def_file = string
-    container_conf     = map(string)
   }))
 }
 
@@ -34,13 +34,13 @@ variable "database_rds_conf" {
 
 variable "auth_cognito_conf" {
   type = object({
-    entra_tenant_id = string # Microsoft Entra ID tenant ID used by the OIDC provider
-    entra_client_id = string # Microsoft Entra ID app registration client ID
+    entra_tenant_id          = string # Microsoft Entra ID tenant ID used by the OIDC provider
+    entra_client_id          = string # Microsoft Entra ID app registration client ID
     entra_oidc_authorize_url = string # Microsoft Entra ID OIDC authorization endpoint
-    entra_oidc_issuer_url = string # Microsoft Entra ID OIDC issuer URL
-    entra_oidc_jwks_url = string # Microsoft Entra ID OIDC JWKS endpoint
-    entra_oidc_token_url = string # Microsoft Entra ID OIDC token endpoint
-    entra_oidc_userinfo_url = string # Microsoft Entra ID OIDC userinfo endpoint
+    entra_oidc_issuer_url    = string # Microsoft Entra ID OIDC issuer URL
+    entra_oidc_jwks_url      = string # Microsoft Entra ID OIDC JWKS endpoint
+    entra_oidc_token_url     = string # Microsoft Entra ID OIDC token endpoint
+    entra_oidc_userinfo_url  = string # Microsoft Entra ID OIDC userinfo endpoint
   })
 }
 

@@ -1,7 +1,7 @@
 data "aws_caller_identity" "current" {} # AWS環境情報の取得
 
 resource "aws_s3_bucket" "frontend" {
-  bucket = "${var.common.project_name}-${var.common.env}-frontend-${data.aws_caller_identity.current.account_id}"
+  bucket = "${var.common.project_name}-frontend-${data.aws_caller_identity.current.account_id}"
 }
 
 resource "aws_s3_bucket_versioning" "frontend" {
@@ -33,16 +33,25 @@ resource "aws_vpc_endpoint" "s3" {
   service_name       = "com.amazonaws.${var.common.region}.s3"
   vpc_endpoint_type  = "Interface"
   subnet_ids         = module.vpc.subnet.public_subnet_ids
-  security_group_ids = [module.sg.id["vpc_endpt_to_frontend"]]
+  security_group_ids = [module.sg.id["vpc_endpt_for_s3"]]
 }
 
 data "aws_network_interface" "vpc_endpt_s3" {
-  for_each = toset(aws_vpc_endpoint.s3.network_interface_ids)
-  id       = each.value
+  for_each = var.vpc_conf.public_subnets
+
+  filter {
+    name   = "vpc-endpoint-id"
+    values = [aws_vpc_endpoint.s3.id]
+  }
+
+  filter {
+    name   = "subnet-id"
+    values = [module.vpc.subnet.public_subnet_ids_by_name[each.key]]
+  }
 }
 
 resource "aws_lb" "frontend" {
-  name               = "${var.common.project_name}-${var.common.env}-to-frontend"
+  name               = "${var.common.project_name}-for-s3"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [module.sg.id["frontend_alb"]]
@@ -63,7 +72,7 @@ resource "aws_lb_listener" "frontend" {
 }
 
 resource "aws_lb_target_group" "frontend" {
-  name        = "${var.common.project_name}-${var.common.env}-to-frontend"
+  name        = "${var.common.project_name}-for-s3"
   port        = 443
   protocol    = "HTTPS"
   vpc_id      = module.vpc.vpc.id

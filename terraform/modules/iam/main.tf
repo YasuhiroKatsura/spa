@@ -1,7 +1,7 @@
 resource "aws_iam_role" "role" {
   for_each = var.iam_conf.roles
 
-  name = each.value.name
+  name        = each.value.name
   description = each.value.description
 
   assume_role_policy = templatefile("${path.root}/templates/${each.value.assume_role_policy_file}", {

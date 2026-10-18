@@ -1,5 +1,5 @@
 resource "aws_cognito_user_pool" "auth" {
-  name = "${var.common.project_name}-${var.common.env}"
+  name = "${var.common.project_name}"
 
   username_attributes      = ["email"]
   auto_verified_attributes = ["email"]
@@ -37,7 +37,7 @@ resource "aws_cognito_identity_provider" "auth" {
 }
 
 resource "aws_cognito_user_pool_client" "auth" {
-  name         = "${var.common.project_name}-${var.common.env}"
+  name         = "${var.common.project_name}"
   user_pool_id = aws_cognito_user_pool.auth.id
 
   generate_secret = false
@@ -51,7 +51,7 @@ resource "aws_cognito_user_pool_client" "auth" {
 }
 
 resource "aws_cognito_user_pool_domain" "auth" {
-  domain       = "${var.common.project_name}-${var.common.env}-auth"
+  domain       = "${var.common.project_name}-auth"
   user_pool_id = aws_cognito_user_pool.auth.id
 }
 
