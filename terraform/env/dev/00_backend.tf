@@ -11,7 +11,7 @@ terraform {
   cloud {
     organization = "okamura"
     workspaces {
-      name = "spa-infra-dev"
+      name = "dev"
     }
   }
 }
