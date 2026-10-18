@@ -107,3 +107,30 @@ CIはGitlab, CDはHCP Terraformという単位でプラットフォームを分�
 - [Terraform設計方針の参考](https://qiita.com/shogomuranushi/items/266f5ef342fb81a7a5cd)
 - [Terraform Document](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 - [Gitlab CICD構文リファレンス](https://docs.gitlab.com/ja-jp/ci/yaml/)
+
+### dev環境の停止・削除方針（メモ）
+
+普段AWSを利用しない期間のrunning costを抑える。料金は東京リージョン（`ap-northeast-1`）での概算であり、データ量・利用状況・税などにより変動する。適用前にTerraform planで削除対象を確認する。
+
+#### リソースごとの扱い
+
+| リソース | 方針 | 注意点 |
+| --- | --- | --- |
+| ECS Service / Task | `desired_count = 0`で停止するflagを設ける | Service、Cluster、Task Definitionは残し、実行Taskだけ停止する。再開しやすい。 |
+| API Gateway | リクエスト課金のため、通信がなければAPI request料金は基本的に発生しない | APIだけを削除せず、削除する場合はVPC LinkやAPI側ALBなど関連リソースとまとめて扱う。 |
+| API Gateway VPC Link | 固定の時間料金は基本的にないため、通常は残してよい | 60日間通信がないと`INACTIVE`になり、次の通信時にENIの再作成で復旧に時間がかかることがある。 |
+| ALB | 停止機能はない。長期間使わない場合は削除を検討する | 通信がなくても時間料金が発生する。東京リージョンのApplication Load Balancerは約$0.0243/時（約$17.74/月・台）に加え、利用量に応じたLCU料金がある。現在のAPI用・Frontend用の2台で約$35.48/月（ALB時間料金のみ）。 |
+| RDS Aurora | 長く使わない場合は、バックアップを取ってから削除する | 現設定の`db.t3.medium` 1台は約$0.125/時（約$91.25/月）。停止は最長7日で自動起動するため長期停止に使わない。削除前に手動スナップショットを取得し、最終スナップショットも有効化する。自動バックアップ保持期間は1日、`skip_final_snapshot = true`のため、現状のままでは削除時の最終スナップショットが作られない。復元後はDB endpointが変わる可能性がある。 |
+| Cognito User Pool | 基本的に削除しない | User Pool削除でユーザーや認証設定を失う。利用者数に応じた課金で、OIDC/SAMLフェデレーションは月50 MAUまで無料枠があり、超過分は約$0.015/MAU・月。SMS、メール、Advanced Security Featuresは別料金。無料枠の適用条件はAWS料金ページを確認する。 |
+| S3 Bucket | 空でもBucket自体の月額料金は通常発生しない。Bucketは残す | データ、リクエスト、追加機能に応じて課金。削除時に中身も失うため、停止flagの対象にしない。 |
+| S3 Interface VPC Endpoint | Frontend ALBと同じflagで削除する | 東京リージョンで約$0.014/時/AZ（約$10.22/月/AZ）。現在の2 AZ構成では約$20.44/月に加えてデータ処理料金がかかる。Frontend ALBのtarget attachmentはEndpoint ENIを参照するため、関連リソースをまとめて扱う。 |
+
+#### flag設計の案
+
+- `api_tasks_enabled`: `true`で通常のdesired count、`false`で`0`にしてECS Taskを停止する。
+- `api_stack_enabled`: API Gateway、VPC Link、API側ALBなどAPI入口のリソース一式をまとめて作成・削除する。
+- `frontend_edge_enabled`: Frontend ALB、S3 Interface VPC Endpoint、関連するlistener / target attachmentをまとめて作成・削除する。S3 Bucket自体は対象外とする。
+- RDSは通常のON/OFF flagから分ける。削除前に手動スナップショットを取得し、snapshotからの復元を別手順として管理する。
+- Cognito User PoolとS3 Bucketは、データ・ユーザーを失うリスクがあるため、通常の停止・削除flagの対象にしない。
+
+flagを`false`にするとTerraformがリソース削除を計画する場合がある。特にRDS、Cognito、S3は、planのdestroy対象を確認してからapplyする。
