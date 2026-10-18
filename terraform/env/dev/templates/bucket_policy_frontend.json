@@ -1,0 +1,17 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowVpcEndpointAccess",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:GetObject",
+      "Resource": "arn:aws:s3:::${bucket_name}/*",
+      "Condition": {
+        "StringEquals": {
+          "aws:sourceVpce": "${vpc_endpoint_id}"
+        }
+      }
+    }
+  ]
+}
