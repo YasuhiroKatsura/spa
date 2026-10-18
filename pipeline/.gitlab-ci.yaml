@@ -12,6 +12,7 @@ cache:
 
 stages:
   - lint
+  - plan
 
 before_script:
   - echo "Adding execute permission to scripts"
@@ -24,7 +25,7 @@ tflint:
     entrypoint: [""]
   script:
     - echo "test" # XXX 後で消す
-    # - $CI_SCRIPTS_DIR/tflint.sh $AWS_ENV
+    # - $CI_SCRIPTS_DIR/tf_lint.sh $AWS_ENV
   # parallel:
   #   matrix:
   #     - AWS_ENV: ["dev"]
@@ -44,6 +45,7 @@ tflint:
 #   rules:
 #     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
 
+
 # main_validate_job:
 #   stage: test
 #   image: 
@@ -56,3 +58,15 @@ tflint:
 #   parallel:
 #     matrix:
 #     - AWS_ENV: ["dev"]
+
+dry_run:
+  stage: plan
+  image:
+    name: hashicorp/terraform:latest
+    entrypoint: [""]
+  variables:
+    TF_TOKEN_app_terraform_io: $TF_TOKEN_app_terraform_io
+  script:
+    - $CI_PROJECT_DIR/pipeline/scripts/tf_plan.sh $AWS_ENV
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" # pushの時だけ実行

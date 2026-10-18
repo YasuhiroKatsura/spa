@@ -68,6 +68,7 @@ Entra ID の App registration には、Terraform output の `cognito_entra_idp_r
 ## CI/CD
 - terraform planはgitlab-ciの中で実装する。
 CIはGitlab, CDはHCP Terraformという単位でプラットフォームを分離する。
+- `TF_TOKEN_app_terraform_io`: GitlabのVariablesに設定
 
 
 ### 方針
