@@ -1,3 +1,10 @@
+variable "common" {
+  type = object({
+    project_name = string
+    region       = string
+  })
+}
+
 variable "vpc_id" {
   type = string
 }

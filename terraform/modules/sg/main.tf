@@ -37,7 +37,7 @@ locals {
 resource "aws_security_group" "this" {
   for_each = var.sg_conf
 
-  name        = each.value.name
+  name        = "${var.common.project_name}-${each.value.name}"
   description = each.value.description
   vpc_id      = var.vpc_id
   egress      = [] #AWSデフォルトの全送信許可ルールを明示的に外す

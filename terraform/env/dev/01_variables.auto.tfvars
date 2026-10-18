@@ -1,5 +1,6 @@
 common = {
   project_name = "spa"
+  env = "dev"
   region       = "ap-northeast-1"
 }
 
@@ -21,8 +22,8 @@ vpc_conf = {
 }
 
 sg_conf = {
-  api_tasks = {
-    name        = "spa-sg-on-ecs-service4api" # xxx
+  ecs_service_api = {
+    name        = "ecs-service-api" # xxx
     description = "Security group for the API ECS service"
     ingress_rules = {
       api_tasks_from_alb = {
@@ -41,8 +42,8 @@ sg_conf = {
       }
     }
   }
-  api_alb = {
-    name        = "spa-sg-on-alb-to-ecs4api"
+  alb_to_ecs = {
+    name        = "alb-to-ecs"
     description = "Security group for the private API load balancer"
     ingress_rules = {
       api_alb_from_vpc_link = {
@@ -61,8 +62,8 @@ sg_conf = {
       }
     }
   }
-  api_gateway_vpc_link = {
-    name        = "spa-sg-on-vpc-link"
+  vpc_link_for_apigw = {
+    name        = "vpc-link-for-apigw"
     description = "Security group for the API Gateway VPC Link"
     egress_rules = {
       api_gateway_to_alb = {
@@ -74,8 +75,8 @@ sg_conf = {
       }
     }
   }
-  database = {
-    name        = "spa-sg-on-rds-aurora"
+  rds = {
+    name        = "rds"
     description = "Security group for Aurora PostgreSQL"
     ingress_rules = {
       database_from_api = {
@@ -94,8 +95,8 @@ sg_conf = {
       }
     }
   }
-  frontend_alb = {
-    name        = "spa-sg-on-alb-to-s34front"
+  alb_to_frontend = {
+    name        = "alb-to-frontend"
     description = "Security group for the public frontend load balancer"
     ingress_rules = {
       frontend_alb_http = {
@@ -114,8 +115,8 @@ sg_conf = {
       }
     }
   }
-  frontend_endpoint = {
-    name        = "spa-sg-on-vpcendpt-to-s34front"
+  vpc_endpt_to_frontend = {
+    name        = "vpc-endpt-to-frontend"
     description = "Security group for the frontend S3 VPC endpoint"
     ingress_rules = {
       frontend_endpoint_from_alb = {
@@ -168,41 +169,5 @@ iam_conf = {
       role_key   = "task"
       policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
     }
-  }
-}
-
-task_conf = {
-  api = {
-    task_cpu           = 256
-    task_memory        = 512
-    desired_count      = 1
-    container_def_file = "ecs_task4api.json"
-    container_conf = {
-      name      = "spa-ecs-container-4api"
-      image_tag = "alpine"
-    }
-  }
-}
-
-database_conf = {
-  engine_version               = "17.7"
-  instance_class               = "db.t3.micro"
-  instance_count               = 1
-  backup_retention_days        = 1
-  deletion_protection          = false
-  skip_final_snapshot          = true
-  performance_insights_enabled = false
-}
-
-apigw_conf = {
-  stage       = "dev"
-  auto_deploy = true
-}
-
-cognito_conf = {
-  spa = {
-    domain_prefix = "spa-auth"
-    callback_urls = ["http://localhost:8080/"]
-    logout_urls   = ["http://localhost:8080/"]
   }
 }

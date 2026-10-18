@@ -1,6 +1,7 @@
 variable "common" {
   type = object({
     project_name = string
+    env          = string
     region       = string
   })
 }
@@ -66,82 +67,4 @@ variable "iam_conf" {
       policy_arn = string
     }))
   })
-}
-
-variable "task_conf" {
-  type = map(object({
-    task_cpu           = number
-    task_memory        = number
-    desired_count      = number
-    container_def_file = string
-    container_conf     = map(string)
-  }))
-}
-
-variable "database_conf" {
-  type = object({
-    engine_version               = string
-    instance_class               = string
-    instance_count               = number
-    backup_retention_days        = number
-    deletion_protection          = bool
-    skip_final_snapshot          = bool
-    performance_insights_enabled = bool
-  })
-}
-
-variable "apigw_conf" {
-  type = object({
-    stage       = string
-    auto_deploy = bool
-  })
-}
-
-variable "cognito_conf" {
-  type = map(object({
-    domain_prefix = string
-    callback_urls = list(string)
-    logout_urls   = list(string)
-  }))
-}
-
-variable "entra_tenant_id" {
-  description = "Microsoft Entra ID tenant ID used by the OIDC provider."
-  type        = string
-}
-
-variable "entra_oidc_issuer_url" {
-  description = "Tenant-specific Microsoft Entra ID OIDC issuer URL."
-  type        = string
-}
-
-variable "entra_oidc_authorize_url" {
-  description = "Microsoft Entra ID OIDC authorization endpoint."
-  type        = string
-}
-
-variable "entra_oidc_token_url" {
-  description = "Microsoft Entra ID OIDC token endpoint."
-  type        = string
-}
-
-variable "entra_oidc_jwks_url" {
-  description = "Microsoft Entra ID OIDC JWKS endpoint."
-  type        = string
-}
-
-variable "entra_oidc_userinfo_url" {
-  description = "Microsoft Entra ID OIDC userinfo endpoint."
-  type        = string
-}
-
-variable "entra_client_id" {
-  description = "Microsoft Entra ID app registration client ID."
-  type        = string
-}
-
-variable "entra_client_secret" {
-  description = "Microsoft Entra ID app registration client secret. Set as an HCP Terraform sensitive variable."
-  type        = string
-  sensitive   = true
 }

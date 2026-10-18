@@ -7,6 +7,7 @@ module "vpc" {
 module "sg" {
   source  = "../../modules/sg"
   vpc_id  = module.vpc.vpc.id
+  common   = var.common
   sg_conf = var.sg_conf
 }
 
