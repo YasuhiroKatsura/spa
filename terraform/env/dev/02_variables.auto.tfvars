@@ -15,7 +15,7 @@ api_ecs_conf = {
 
 database_rds_conf = {
   engine_version               = "17.7"
-  instance_class               = "db.t3.micro"
+  instance_class               = "db.t3.medium"
   instance_count               = 1
   backup_retention_days        = 1
   deletion_protection          = false

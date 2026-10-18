@@ -40,13 +40,18 @@ data "aws_network_interface" "vpc_endpt_s3" {
   for_each = var.vpc_conf.public_subnets
 
   filter {
-    name   = "vpc-endpoint-id"
-    values = [aws_vpc_endpoint.s3.id]
+    name   = "description"
+    values = ["VPC Endpoint Interface ${aws_vpc_endpoint.s3.id}"]
   }
 
   filter {
     name   = "subnet-id"
     values = [module.vpc.subnet.public_subnet_ids_by_name[each.key]]
+  }
+
+  filter {
+    name   = "interface-type"
+    values = ["vpc_endpoint"]
   }
 }
 

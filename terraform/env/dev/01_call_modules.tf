@@ -13,5 +13,6 @@ module "sg" {
 
 module "iam" {
   source   = "../../modules/iam"
+  common   = var.common
   iam_conf = var.iam_conf
 }

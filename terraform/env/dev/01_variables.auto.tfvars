@@ -140,14 +140,14 @@ sg_conf = {
 iam_conf = {
   roles = {
     task_execution = {
-      name                    = "spa-ecs-task-execution-role-4api"
-      description             = "ECS AgentがTask実行するための権限"
+      name                    = "ecs-task-execution"
+      description             = "permission for ECS Agent to execute tasks"
       assume_role_policy_file = "trust_policy_task.json"
       assume_role_service     = "ecs-tasks.amazonaws.com"
     }
     task = {
-      name                    = "spa-ecs-task-role-4api"
-      description             = "ECS TaskがAWSリソースにアクセスするための権限"
+      name                    = "ecs-task"
+      description             = "permission for ECS Task to access AWS resources"
       assume_role_policy_file = "trust_policy_task.json"
       assume_role_service     = "ecs-tasks.amazonaws.com"
     }
@@ -155,7 +155,7 @@ iam_conf = {
 
   inline_policies = {
     task_ssm_connection = { # ECS TaskにSSMのSendCommandを許可するポリシーを付与
-      name               = "spa-ecs-task-role-execute-command-policy-4api"
+      name               = "ecs-task-ssm-connection"
       role_key           = "task"
       inline_policy_file = "inline_policy_task_ssm_connection.json"
     }
