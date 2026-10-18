@@ -7,13 +7,14 @@ data "aws_subnet" "database" {
 }
 
 resource "aws_rds_cluster" "database" {
-  cluster_identifier          = "${var.common.project_name}"
+  count                       = var.resource_flags.rds_enabled ? 1 : 0
+  cluster_identifier          = var.common.project_name
   engine                      = "aurora-postgresql"
   engine_version              = var.database_rds_conf.engine_version
-  database_name               = "${var.common.project_name}"
+  database_name               = var.common.project_name
   master_username             = "postgres"
   manage_master_user_password = true
-  db_subnet_group_name        = aws_db_subnet_group.database.name
+  db_subnet_group_name        = aws_db_subnet_group.database[0].name
   vpc_security_group_ids      = [module.sg.id["rds"]]
 
   backup_retention_period      = var.database_rds_conf.backup_retention_days
@@ -25,18 +26,19 @@ resource "aws_rds_cluster" "database" {
 }
 
 resource "aws_rds_cluster_instance" "database" {
-  count              = var.database_rds_conf.instance_count
-  cluster_identifier = aws_rds_cluster.database.id
+  count              = var.resource_flags.rds_enabled ? var.database_rds_conf.instance_count : 0
+  cluster_identifier = aws_rds_cluster.database[0].id
   instance_class     = var.database_rds_conf.instance_class
-  engine             = aws_rds_cluster.database.engine
-  engine_version     = aws_rds_cluster.database.engine_version
+  engine             = aws_rds_cluster.database[0].engine
+  engine_version     = aws_rds_cluster.database[0].engine_version
 
   performance_insights_enabled = var.database_rds_conf.performance_insights_enabled
   auto_minor_version_upgrade   = true
 }
 
 resource "aws_db_subnet_group" "database" {
-  name = "${var.common.project_name}"
+  count = var.resource_flags.rds_enabled ? 1 : 0
+  name  = var.common.project_name
   subnet_ids = [
     module.vpc.subnet.private_subnet_ids_by_name.aurora_a,
     module.vpc.subnet.private_subnet_ids_by_name.aurora_c,

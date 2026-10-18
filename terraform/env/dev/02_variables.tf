@@ -1,4 +1,19 @@
 
+variable "resource_flags" {
+  type = object({
+    api_tasks_enabled     = bool # ECS Service / Taskを作成・削除する（RDS有効時）
+    api_stack_enabled     = bool # API Gateway、VPC Link、API用ALBを作成・削除する（ECS Serviceは維持）
+    frontend_edge_enabled = bool # Frontend ALB、S3 VPC Endpointを作成・削除する
+    s3_enabled            = bool # Frontend S3 Bucketを作成・削除する
+    rds_enabled           = bool # Aurora cluster、instance、DB subnet group(, 付随してECS Service, Taskも)を作成・削除する
+  })
+
+  validation { # frontend_edge_enabledをtrueにする場合はs3_enabledもtrueとする必要がある
+    condition     = var.resource_flags.s3_enabled || !var.resource_flags.frontend_edge_enabled
+    error_message = "frontend_edge_enabled requires s3_enabled because the frontend edge serves content from the S3 bucket."
+  }
+}
+
 variable "frontend_s3_conf" {
   type = object({
     bucket_policy_file = string
@@ -7,7 +22,7 @@ variable "frontend_s3_conf" {
 
 variable "api_ecs_conf" {
   type = map(object({
-    name = string
+    name               = string
     task_cpu           = number
     task_memory        = number
     desired_count      = number

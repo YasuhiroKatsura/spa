@@ -1,33 +1,38 @@
 resource "aws_apigatewayv2_api" "api" {
-  name          = "${var.common.project_name}"
+  count         = var.resource_flags.api_stack_enabled ? 1 : 0
+  name          = var.common.project_name
   protocol_type = "HTTP"
 }
 
 resource "aws_apigatewayv2_stage" "api" {
-  api_id      = aws_apigatewayv2_api.api.id
+  count       = var.resource_flags.api_stack_enabled ? 1 : 0
+  api_id      = aws_apigatewayv2_api.api[0].id
   name        = "dev"
   auto_deploy = true
 }
 
 resource "aws_apigatewayv2_route" "api" {
-  api_id    = aws_apigatewayv2_api.api.id
+  count     = var.resource_flags.api_stack_enabled ? 1 : 0
+  api_id    = aws_apigatewayv2_api.api[0].id
   route_key = "$default"
-  target    = "integrations/${aws_apigatewayv2_integration.api.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.api[0].id}"
 }
 
 resource "aws_apigatewayv2_integration" "api" {
-  api_id                 = aws_apigatewayv2_api.api.id
+  count                  = var.resource_flags.api_stack_enabled ? 1 : 0
+  api_id                 = aws_apigatewayv2_api.api[0].id
   integration_type       = "HTTP_PROXY"
   integration_method     = "ANY"
-  integration_uri        = aws_lb_listener.api.arn
+  integration_uri        = aws_lb_listener.api[0].arn
   connection_type        = "VPC_LINK"
-  connection_id          = aws_apigatewayv2_vpc_link.api.id
+  connection_id          = aws_apigatewayv2_vpc_link.api[0].id
   payload_format_version = "1.0"
   timeout_milliseconds   = 30000
 }
 
 resource "aws_apigatewayv2_vpc_link" "api" {
-  name = "${var.common.project_name}-for-apigw"
+  count = var.resource_flags.api_stack_enabled ? 1 : 0
+  name  = "${var.common.project_name}-for-apigw"
   subnet_ids = [
     module.vpc.subnet.private_subnet_ids_by_name.alb_a,
     module.vpc.subnet.private_subnet_ids_by_name.alb_c,
@@ -36,6 +41,7 @@ resource "aws_apigatewayv2_vpc_link" "api" {
 }
 
 resource "aws_lb" "api" {
+  count              = var.resource_flags.api_stack_enabled ? 1 : 0
   name               = "${var.common.project_name}-for-ecs"
   internal           = true
   load_balancer_type = "application"
@@ -49,6 +55,7 @@ resource "aws_lb" "api" {
 }
 
 resource "aws_lb_target_group" "api" {
+  count       = var.resource_flags.api_stack_enabled ? 1 : 0
   name        = "${var.common.project_name}-for-ecs"
   port        = 80
   protocol    = "HTTP"
@@ -66,21 +73,23 @@ resource "aws_lb_target_group" "api" {
 }
 
 resource "aws_lb_listener" "api" {
-  load_balancer_arn = aws_lb.api.arn
+  count             = var.resource_flags.api_stack_enabled ? 1 : 0
+  load_balancer_arn = aws_lb.api[0].arn
   port              = 80
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.api.arn
+    target_group_arn = aws_lb_target_group.api[0].arn
   }
 }
 
 resource "aws_ecs_cluster" "api" {
-  name = "${var.common.project_name}"
+  name = var.common.project_name
 }
 
 resource "aws_ecs_task_definition" "api_main" {
+  count                    = var.resource_flags.rds_enabled ? 1 : 0
   family                   = "${var.common.project_name}-${var.api_ecs_conf.main.name}"
   cpu                      = var.api_ecs_conf.main.task_cpu
   memory                   = var.api_ecs_conf.main.task_memory
@@ -93,11 +102,11 @@ resource "aws_ecs_task_definition" "api_main" {
     "${path.root}/templates/${var.api_ecs_conf.main.container_def_file}",
     {
       name          = "${var.common.project_name}-${var.api_ecs_conf.main.name}"
-      db_host       = aws_rds_cluster.database.endpoint
-      db_port       = tostring(aws_rds_cluster.database.port)
-      db_name       = aws_rds_cluster.database.database_name
-      db_user       = aws_rds_cluster.database.master_username
-      db_secret_arn = aws_rds_cluster.database.master_user_secret[0].secret_arn
+      db_host       = aws_rds_cluster.database[0].endpoint
+      db_port       = tostring(aws_rds_cluster.database[0].port)
+      db_name       = aws_rds_cluster.database[0].database_name
+      db_user       = aws_rds_cluster.database[0].master_username
+      db_secret_arn = aws_rds_cluster.database[0].master_user_secret[0].secret_arn
     }
   )
 
@@ -108,9 +117,10 @@ resource "aws_ecs_task_definition" "api_main" {
 }
 
 resource "aws_ecs_service" "api_main" {
+  count                  = var.resource_flags.api_tasks_enabled && var.resource_flags.rds_enabled ? 1 : 0
   name                   = "${var.common.project_name}-${var.api_ecs_conf.main.name}"
   cluster                = aws_ecs_cluster.api.id
-  task_definition        = aws_ecs_task_definition.api_main.arn
+  task_definition        = aws_ecs_task_definition.api_main[0].arn
   desired_count          = var.api_ecs_conf.main.desired_count
   enable_execute_command = true
 
@@ -125,10 +135,13 @@ resource "aws_ecs_service" "api_main" {
     assign_public_ip = false
   }
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.api.arn
-    container_name   = "${var.common.project_name}-${var.api_ecs_conf.main.name}"
-    container_port   = 80
+  dynamic "load_balancer" {
+    for_each = var.resource_flags.api_stack_enabled ? [true] : []
+    content {
+      target_group_arn = aws_lb_target_group.api[0].arn
+      container_name   = "${var.common.project_name}-${var.api_ecs_conf.main.name}"
+      container_port   = 80
+    }
   }
 
   depends_on = [aws_lb_listener.api]
