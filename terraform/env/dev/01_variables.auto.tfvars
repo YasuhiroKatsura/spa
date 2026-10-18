@@ -1,6 +1,6 @@
 common = {
   project_name = "spa"
-  env = "dev"
+  env          = "dev"
   region       = "ap-northeast-1"
 }
 
@@ -38,7 +38,7 @@ sg_conf = {
       egress_to_all = {
         description = "Allow all outbound traffic"
         ip_protocol = "-1"
-        cidr_ipv4 = ["0.0.0.0/0"]
+        cidr_ipv4   = ["0.0.0.0/0"]
       }
     }
   }
@@ -57,9 +57,8 @@ sg_conf = {
     egress_rules = {
       egress_to_all = {
         description = "Allow all outbound traffic"
-        cidr_ipv4   = "0.0.0.0/0"
         ip_protocol = "-1"
-        cidr_ipv4 = ["0.0.0.0/0"]
+        cidr_ipv4   = ["0.0.0.0/0"]
       }
     }
   }
@@ -92,7 +91,7 @@ sg_conf = {
       egress_to_all = {
         description = "Allow all outbound traffic"
         ip_protocol = "-1"
-        cidr_ipv4 = ["0.0.0.0/0"]
+        cidr_ipv4   = ["0.0.0.0/0"]
       }
     }
   }
@@ -102,7 +101,7 @@ sg_conf = {
     ingress_rules = {
       ingress_from_internet = {
         description = "Allow public HTTP traffic"
-        cidr_ipv4   = "0.0.0.0/0"
+        cidr_ipv4   = ["0.0.0.0/0"]
         from_port   = 80
         to_port     = 80
         ip_protocol = "tcp"
@@ -111,7 +110,7 @@ sg_conf = {
     egress_rules = {
       egress_to_all = {
         description = "Allow all outbound traffic"
-        cidr_ipv4   = "0.0.0.0/0"
+        cidr_ipv4   = ["0.0.0.0/0"]
         ip_protocol = "-1"
       }
     }
@@ -131,7 +130,7 @@ sg_conf = {
     egress_rules = {
       egress_to_all = {
         description = "Allow all outbound traffic"
-        cidr_ipv4   = "0.0.0.0/0"
+        cidr_ipv4   = ["0.0.0.0/0"]
         ip_protocol = "-1"
       }
     }

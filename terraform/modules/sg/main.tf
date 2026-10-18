@@ -2,16 +2,30 @@ locals {
   ingress_rules = {
     for rule in flatten([
       for security_group_key, security_group in var.sg_conf : [
-        for rule_key, rule in security_group.ingress_rules : {
-          key                           = "${security_group_key}.${rule_key}"
-          security_group_key            = security_group_key
-          description                   = rule.description
-          ip_protocol                   = rule.ip_protocol
-          from_port                     = rule.from_port
-          to_port                       = rule.to_port
-          cidr_ipv4                     = rule.cidr_ipv4
-          referenced_security_group_key = rule.referenced_security_group_key
-        }
+        for rule_key, rule in security_group.ingress_rules : concat(
+          [
+            for cidr_index, cidr in(rule.cidr_ipv4 == null ? tolist([]) : rule.cidr_ipv4) : {
+              key                           = "${security_group_key}.${rule_key}.cidr.${cidr_index}"
+              security_group_key            = security_group_key
+              description                   = rule.description
+              ip_protocol                   = rule.ip_protocol
+              from_port                     = rule.from_port
+              to_port                       = rule.to_port
+              cidr_ipv4                     = cidr
+              referenced_security_group_key = null
+            }
+          ],
+          rule.referenced_security_group_key == null ? [] : [{
+            key                           = "${security_group_key}.${rule_key}.referenced"
+            security_group_key            = security_group_key
+            description                   = rule.description
+            ip_protocol                   = rule.ip_protocol
+            from_port                     = rule.from_port
+            to_port                       = rule.to_port
+            cidr_ipv4                     = null
+            referenced_security_group_key = rule.referenced_security_group_key
+          }]
+        )
       ]
     ]) : rule.key => rule
   }
@@ -19,16 +33,30 @@ locals {
   egress_rules = {
     for rule in flatten([
       for security_group_key, security_group in var.sg_conf : [
-        for rule_key, rule in security_group.egress_rules : {
-          key                           = "${security_group_key}.${rule_key}"
-          security_group_key            = security_group_key
-          description                   = rule.description
-          ip_protocol                   = rule.ip_protocol
-          from_port                     = rule.from_port
-          to_port                       = rule.to_port
-          cidr_ipv4                     = rule.cidr_ipv4
-          referenced_security_group_key = rule.referenced_security_group_key
-        }
+        for rule_key, rule in security_group.egress_rules : concat(
+          [
+            for cidr_index, cidr in(rule.cidr_ipv4 == null ? tolist([]) : rule.cidr_ipv4) : {
+              key                           = "${security_group_key}.${rule_key}.cidr.${cidr_index}"
+              security_group_key            = security_group_key
+              description                   = rule.description
+              ip_protocol                   = rule.ip_protocol
+              from_port                     = rule.from_port
+              to_port                       = rule.to_port
+              cidr_ipv4                     = cidr
+              referenced_security_group_key = null
+            }
+          ],
+          rule.referenced_security_group_key == null ? [] : [{
+            key                           = "${security_group_key}.${rule_key}.referenced"
+            security_group_key            = security_group_key
+            description                   = rule.description
+            ip_protocol                   = rule.ip_protocol
+            from_port                     = rule.from_port
+            to_port                       = rule.to_port
+            cidr_ipv4                     = null
+            referenced_security_group_key = rule.referenced_security_group_key
+          }]
+        )
       ]
     ]) : rule.key => rule
   }
