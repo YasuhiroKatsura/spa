@@ -62,7 +62,7 @@ tflint:
 dry_run:
   stage: plan
   image:
-    name: hashicorp/terraform:latest
+    name: hashicorp/terraform:1.16
     entrypoint: [""]
   variables:
     TF_TOKEN_app_terraform_io: $TF_TOKEN_app_terraform_io
