@@ -8,6 +8,7 @@ Local環境に以下をインストール
 - [aws cli](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/getting-started-install.html)
 - [terraform](https://developer.hashicorp.com/terraform/install)
 - [tflint](https://github.com/terraform-linters/tflint/releases)
+- [gitleaks](https://github.com/gitleaks/gitleaks/releases)
 
 ```
 > aws --version
@@ -26,10 +27,15 @@ TFLint version 0.61.0
 
 > python --version
 Python 3.9.12
+
 > pip --version
 pip 21.2.4 from C:\Users\katsu\anaconda3\lib\site-packages\pip (python 3.9)
+
 > pre-commit --version
 pre-commit 4.3.0
+
+> gitleaks --version
+gitleaks version 8.30.1
 ```
 
 ### 設計方針
