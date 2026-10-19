@@ -23,6 +23,13 @@ is 1.15.1. You can update by downloading from https://developer.hashicorp.com/te
 > tflint -v
 TFLint version 0.61.0
 + ruleset.terraform (0.14.1-bundled)
+
+> python --version
+Python 3.9.12
+> pip --version
+pip 21.2.4 from C:\Users\katsu\anaconda3\lib\site-packages\pip (python 3.9)
+> pre-commit --version
+pre-commit 4.3.0
 ```
 
 ### 設計方針
@@ -137,3 +144,17 @@ CIはGitlab, CDはHCP Terraformという単位でプラットフォームを分�
 - Cognito User Poolはユーザーを失うためflagの対象外とする。
 
 flagを`false`にするとTerraformがリソース削除を計画する。適用前にplanのdestroy対象を確認する。特にRDSとS3は、現状ではデータを保持せず削除する設定である。
+
+## Pre-commit
+```
+pre-commit sample-config | out-file .pre-commit-config.yaml -encoding utf8
+```
+.pre-commit-config.yamlを作る。外部通信は発生しない。初回のみ実行。
+```
+pre-commit install
+```
+Git hookを有効化する。.git/hooks/pre-commitを作成する。外部通信は発生しない。初回のみ実行。Git clone後に実行。
+```
+pre-commit install-hooks
+```
+hook用の設定やライブラリの取得。外部通信が発生する。初回のみ実行。
