@@ -89,7 +89,7 @@ CIはGitlab, CDはHCP Terraformという単位でプラットフォームを分�
     - terraform plan結果は保存し、手動承認後にapplyする。
 - 開発の流れ (環境がdevしかない前提)
   1. feature/xxxブランチを作成
-  2. 開発する。ローカル端末でterraform validate, planを実行し問題がないことを確認する。  
+  2. 開発する。ローカル端末でterraform validate, planを実行し問題がないことを確認する。
      ※ ローカル端末からapplyは行わない (VCS連動なのでできない)。
   3. mainへのマージリクエストを作成する。このタイミングでCIが実行される。
   4. CI結果に問題がなければマージする。このタイミングでCDが実行される。
@@ -158,3 +158,7 @@ Git hookを有効化する。.git/hooks/pre-commitを作成する。外部通信
 pre-commit install-hooks
 ```
 hook用の設定やライブラリの取得。外部通信が発生する。初回のみ実行。
+```
+pre-commit run --all-files
+```
+動作確認コマンド。全ファイルに対してチェックを実行。
