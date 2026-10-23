@@ -12,13 +12,13 @@ repos:
   - repo: local
     hooks:
       - id: gitleaks
-        name: Gitleaks
-        entry: gitleaks detect --staged --verbose
+        name: gitleaks
+        entry: gitleaks protect --staged --verbose
         language: system
         pass_filenames: false
 
       - id: tflint
-        name: tfLint
+        name: tflint
         entry: bash -c 'cd terraform/env/dev/ && tflint --config=__GIT_WORKING_DIR__/terraform.tflint.hcl'
         language: system
         types: [terraform]
@@ -26,15 +26,14 @@ repos:
         pass_filenames: false
 
       - id: terraform-fmt
-        name: Terraform fmt
-        entry: terraform fmt
-        args: ['-diff']
+        name: terraform fmt
+        entry: terraform fmt -diff
         language: system
         types: [terraform]
         files: ^terraform/env/.*\.tf$
 
       - id: terraform-validate
-        name: Terraform validate
+        name: terraform validate
         entry: bash -c 'cd terraform/env/dev/ && terraform validate'
         language: system
         types: [terraform]
