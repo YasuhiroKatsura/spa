@@ -1,5 +1,3 @@
-#test
-
 module "vpc" {
   source   = "../../modules/vpc"
   common   = var.common
