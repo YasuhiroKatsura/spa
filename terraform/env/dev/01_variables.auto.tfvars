@@ -1,10 +1,10 @@
-common = {
+common = { # プロジェクト共通の設定
   project_name = "spa"
   env          = "dev"
   region       = "ap-northeast-1"
 }
 
-vpc_conf = {
+vpc_conf = { # VPC設定
   vpc = {
     cidr_block = "10.0.0.0/16"
   }
@@ -21,7 +21,7 @@ vpc_conf = {
   }
 }
 
-sg_conf = {
+sg_conf = { # Security Group設定
   ecs_service_main = {
     name        = "ecs-service-main"
     description = "Security group for the API ECS service"
@@ -137,7 +137,7 @@ sg_conf = {
   }
 }
 
-iam_conf = {
+iam_conf = { # IAM設定
   roles = {
     task_execution = {
       name                    = "ecs-task-execution"

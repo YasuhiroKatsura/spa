@@ -1,4 +1,4 @@
-terraform {
+terraform { # HCP Terraform設定
   required_version = "~> 1.16.0"
 
   required_providers {
@@ -16,7 +16,7 @@ terraform {
   }
 }
 
-provider "aws" {
+provider "aws" { # provider設定
   region = var.common.region
 
   default_tags {

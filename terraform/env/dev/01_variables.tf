@@ -1,4 +1,4 @@
-variable "common" {
+variable "common" { # プロジェクト共通の設定
   type = object({
     project_name = string
     env          = string
@@ -6,7 +6,7 @@ variable "common" {
   })
 }
 
-variable "vpc_conf" {
+variable "vpc_conf" { # VPC設定
   type = object({
     vpc = object({
       cidr_block = string
@@ -20,7 +20,7 @@ variable "vpc_conf" {
   })
 }
 
-variable "sg_conf" {
+variable "sg_conf" { # Security Group設定
   type = map(object({
     name        = string
     description = string
@@ -43,7 +43,7 @@ variable "sg_conf" {
   }))
 }
 
-variable "iam_conf" {
+variable "iam_conf" { # IAM設定
   type = object({
     roles = map(object({ # IAM Roleの定義
       name                    = string

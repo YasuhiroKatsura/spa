@@ -1,6 +1,7 @@
 variables:
   TERRAFORM_VERSION: "1.15.1"
   TFLINT_VERSION: "v0.50.0"
+  GITLEAKS_VERSION: "v8.30.1"
   AWS_ENV: "dev"
   CI_SCRIPTS_DIR: "$CI_PROJECT_DIR/pipeline/scripts"
 
@@ -24,40 +25,29 @@ tflint:
     name: ghcr.io/terraform-linters/tflint:${TFLINT_VERSION}
     entrypoint: [""]
   script:
-    - echo "test" # XXX 後で消す
-    # - $CI_SCRIPTS_DIR/tf_lint.sh $AWS_ENV
-  # parallel:
-  #   matrix:
-  #     - AWS_ENV: ["dev"]
-  # rules:
-  #   - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
-  # parallel:
-  #   matrix:
-  #     - AWS_ENV: ["dev"]
+    - $CI_SCRIPTS_DIR/tf_lint.sh $AWS_ENV
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
 
-# terraform-fmt:
-#   stage: lint
-#   image:
-#     name: hashicorp/terraform:${TERRAFORM_VERSION}
-#     entrypoint: [""]
-#   script:
-#     - terraform fmt -check -diff -recursive terraform/ # XXX  # 修正項目がある場合はexit code 3を吐いて停止
-#   rules:
-#     - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
+gitleaks:
+  stage: lint
+  image:
+    name: zricethezav/gitleaks:${GITLEAKS_VERSION}
+    entrypoint: [""]
+  script:
+    - $CI_SCRIPTS_DIR/gitleaks.sh
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
 
-
-# main_validate_job:
-#   stage: test
-#   image: 
-#     name: hashicorp/terraform:latest
-#     entrypoint: [""]
-#   script:
-#   - $CI_PROJECT_DIR/pipeline/scripts/validate.sh $AWS_ENV
-#   rules:
-    # - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
-#   parallel:
-#     matrix:
-#     - AWS_ENV: ["dev"]
+terraform-fmt:
+  stage: lint
+  image:
+    name: hashicorp/terraform:${TERRAFORM_VERSION}
+    entrypoint: [""]
+  script:
+    - $CI_SCRIPTS_DIR/tf_fmt.sh
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" # マージリクエスト時に実行
 
 dry_run:
   stage: plan

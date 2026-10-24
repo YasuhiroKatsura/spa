@@ -1,3 +1,4 @@
+# API Gateway設定
 resource "aws_apigatewayv2_api" "api" {
   count         = var.resource_flags.api_stack_enabled ? 1 : 0
   name          = var.common.project_name
@@ -40,6 +41,7 @@ resource "aws_apigatewayv2_vpc_link" "api" {
   security_group_ids = [module.sg.id["vpc_link_for_apigw"]]
 }
 
+# ALB設定
 resource "aws_lb" "api" {
   count              = var.resource_flags.api_stack_enabled ? 1 : 0
   name               = "${var.common.project_name}-for-ecs"
@@ -84,6 +86,7 @@ resource "aws_lb_listener" "api" {
   }
 }
 
+# ECS設定
 resource "aws_ecs_cluster" "api" {
   name = var.common.project_name
 }

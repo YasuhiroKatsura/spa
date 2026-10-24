@@ -1,5 +1,6 @@
+# Cognito設定
 resource "aws_cognito_user_pool" "auth" {
-  name = "${var.common.project_name}"
+  name = var.common.project_name
 
   username_attributes      = ["email"]
   auto_verified_attributes = ["email"]
@@ -15,7 +16,7 @@ resource "aws_cognito_user_pool" "auth" {
 resource "aws_cognito_identity_provider" "auth" {
   user_pool_id  = aws_cognito_user_pool.auth.id
   provider_name = "EntraID"
-  provider_type = "OIDC"
+  provider_type = "OIDC" # SAML or OIDC
 
   provider_details = {
     client_id                 = var.auth_cognito_conf.entra_client_id
@@ -37,7 +38,7 @@ resource "aws_cognito_identity_provider" "auth" {
 }
 
 resource "aws_cognito_user_pool_client" "auth" {
-  name         = "${var.common.project_name}"
+  name         = var.common.project_name
   user_pool_id = aws_cognito_user_pool.auth.id
 
   generate_secret = false
