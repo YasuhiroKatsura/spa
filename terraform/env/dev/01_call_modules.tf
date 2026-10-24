@@ -7,7 +7,7 @@ module "vpc" { #vpc設定
 module "sg" { # Security Group設定
   source  = "../../modules/sg"
   vpc_id  = module.vpc.vpc.id
-  common   = var.common
+  common  = var.common
   sg_conf = var.sg_conf
 }
 

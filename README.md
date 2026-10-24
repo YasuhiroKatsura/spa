@@ -170,4 +170,6 @@ pre-commit run --all-files
 ```
 動作確認コマンド。全ファイルに対してチェックを実行。
 
-test
+VSCodeのCommitボタンからhookされない場合は以下のように修正。
+- .git/config：core.hooksPath に C:/Users/katsu/OneDrive/デスクトップ/work/spa-infra/.git/hooks を設定する。Git がこのリポジトリで使う hook の場所を明示する。
+- pre-commit install --overwrite を実行。.git/hooks/pre-commitが再生成される。
