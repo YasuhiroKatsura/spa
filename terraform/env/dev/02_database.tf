@@ -6,6 +6,7 @@ data "aws_subnet" "database" {
   id = each.value
 }
 
+# RDS設定
 resource "aws_rds_cluster" "database" {
   count                       = var.resource_flags.rds_enabled ? 1 : 0
   cluster_identifier          = var.common.project_name

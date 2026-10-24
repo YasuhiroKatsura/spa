@@ -1,3 +1,4 @@
+# リソース起動/停止設定
 variable "resource_flags" {
   type = object({
     api_tasks_enabled     = bool # ECS Service / Taskを作成・削除する（RDS有効時）
@@ -13,12 +14,14 @@ variable "resource_flags" {
   }
 }
 
+# S3設定
 variable "frontend_s3_conf" {
   type = object({
     bucket_policy_file = string
   })
 }
 
+# ECS設定 
 variable "api_ecs_conf" {
   type = map(object({
     name               = string
@@ -29,11 +32,7 @@ variable "api_ecs_conf" {
   }))
 }
 
-# variable "api_apigw_conf" {
-#   type = object({
-#   })
-# }
-
+# RDS設定
 variable "database_rds_conf" {
   type = object({
     engine_version               = string
@@ -46,6 +45,7 @@ variable "database_rds_conf" {
   })
 }
 
+# Cognito設定
 variable "auth_cognito_conf" {
   type = object({
     entra_tenant_id          = string # Microsoft Entra ID tenant ID used by the OIDC provider
@@ -58,6 +58,7 @@ variable "auth_cognito_conf" {
   })
 }
 
+# Cognitoシークレット設定（コード内には設定しない）
 variable "entra_client_secret" {
   description = "Microsoft Entra ID app registration client secret. Set as an HCP Terraform sensitive variable."
   type        = string

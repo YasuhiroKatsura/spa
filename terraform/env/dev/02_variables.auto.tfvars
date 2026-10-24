@@ -1,3 +1,4 @@
+# リソース起動/停止設定
 resource_flags = {
   api_tasks_enabled     = false
   api_stack_enabled     = false
@@ -6,10 +7,12 @@ resource_flags = {
   rds_enabled           = false
 }
 
+# S3設定
 frontend_s3_conf = {
   bucket_policy_file = "bucket_policy_frontend.json"
 }
 
+# ECS設定
 api_ecs_conf = {
   main = {
     name               = "main"
@@ -20,6 +23,7 @@ api_ecs_conf = {
   }
 }
 
+# RDS設定
 database_rds_conf = {
   engine_version               = "17.7"
   instance_class               = "db.t3.medium"
@@ -30,6 +34,7 @@ database_rds_conf = {
   performance_insights_enabled = false
 }
 
+# Cognito設定
 auth_cognito_conf = {
   entra_tenant_id          = "48d5d751-0dc5-4a60-8a05-d9b5e8e76d72"
   entra_client_id          = "5016b4cb-4b4e-4e51-b56f-46a1b12de113"
