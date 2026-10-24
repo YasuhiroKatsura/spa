@@ -1,4 +1,3 @@
-
 variable "resource_flags" {
   type = object({
     api_tasks_enabled     = bool # ECS Service / Taskを作成・削除する（RDS有効時）

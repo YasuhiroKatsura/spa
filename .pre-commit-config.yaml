@@ -18,7 +18,7 @@ repos:
 
       - id: tflint
         name: tflint
-        entry: bash -c 'cd terraform/env/dev/ && tflint --config=__GIT_WORKING_DIR__/terraform/.tflint.hcl'
+        entry: bash -c 'cd terraform/env/dev/ && tflint --config=../../.tflint.hcl'
         language: system
         types: [terraform]
         files: ^terraform/env/.*\.tf$
@@ -38,6 +38,3 @@ repos:
         types: [terraform]
         files: ^terraform/env/.*\.tf$
         pass_filenames: false
-
-      
-

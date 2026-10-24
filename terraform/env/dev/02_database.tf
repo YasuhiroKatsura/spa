@@ -1,4 +1,3 @@
-# test
 data "aws_subnet" "database" {
   for_each = {
     aurora_a = module.vpc.subnet.private_subnet_ids_by_name.aurora_a

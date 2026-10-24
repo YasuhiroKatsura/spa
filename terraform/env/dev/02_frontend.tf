@@ -1,4 +1,3 @@
-# test
 data "aws_caller_identity" "current" {} # AWS環境情報の取得
 
 resource "aws_s3_bucket" "frontend" {
