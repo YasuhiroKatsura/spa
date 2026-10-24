@@ -18,7 +18,7 @@ repos:
 
       - id: tflint
         name: tflint
-        entry: bash -c 'cd terraform/env/dev/ && tflint --config=../../.tflint.hcl'
+        entry: bash -c 'cd terraform/env/dev/ && tflint --init && tflint -f compact --config=../../.tflint.hcl'
         language: system
         types: [terraform]
         files: ^terraform/env/.*\.tf$
@@ -26,7 +26,7 @@ repos:
 
       - id: terraform-fmt
         name: terraform fmt
-        entry: terraform fmt -diff
+        entry: terraform fmt -diff -recursive terraform/
         language: system
         types: [terraform]
         files: ^terraform/env/.*\.tf$
