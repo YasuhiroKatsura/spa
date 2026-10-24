@@ -1,4 +1,3 @@
-# test
 resource "aws_apigatewayv2_api" "api" {
   count         = var.resource_flags.api_stack_enabled ? 1 : 0
   name          = var.common.project_name
