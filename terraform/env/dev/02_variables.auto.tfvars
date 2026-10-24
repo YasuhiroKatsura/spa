@@ -1,4 +1,3 @@
-
 resource_flags = {
   api_tasks_enabled     = false
   api_stack_enabled     = false

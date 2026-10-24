@@ -8,6 +8,7 @@ Local環境に以下をインストール
 - [aws cli](https://docs.aws.amazon.com/ja_jp/cli/latest/userguide/getting-started-install.html)
 - [terraform](https://developer.hashicorp.com/terraform/install)
 - [tflint](https://github.com/terraform-linters/tflint/releases)
+- [gitleaks](https://github.com/gitleaks/gitleaks/releases)
 
 ```
 > aws --version
@@ -23,6 +24,18 @@ is 1.15.1. You can update by downloading from https://developer.hashicorp.com/te
 > tflint -v
 TFLint version 0.61.0
 + ruleset.terraform (0.14.1-bundled)
+
+> python --version
+Python 3.9.12
+
+> pip --version
+pip 21.2.4 from C:\Users\katsu\anaconda3\lib\site-packages\pip (python 3.9)
+
+> pre-commit --version
+pre-commit 4.3.0
+
+> gitleaks --version
+gitleaks version 8.30.1
 ```
 
 ### 設計方針
@@ -82,7 +95,7 @@ CIはGitlab, CDはHCP Terraformという単位でプラットフォームを分�
     - terraform plan結果は保存し、手動承認後にapplyする。
 - 開発の流れ (環境がdevしかない前提)
   1. feature/xxxブランチを作成
-  2. 開発する。ローカル端末でterraform validate, planを実行し問題がないことを確認する。  
+  2. 開発する。ローカル端末でterraform validate, planを実行し問題がないことを確認する。
      ※ ローカル端末からapplyは行わない (VCS連動なのでできない)。
   3. mainへのマージリクエストを作成する。このタイミングでCIが実行される。
   4. CI結果に問題がなければマージする。このタイミングでCDが実行される。
@@ -137,3 +150,23 @@ CIはGitlab, CDはHCP Terraformという単位でプラットフォームを分�
 - Cognito User Poolはユーザーを失うためflagの対象外とする。
 
 flagを`false`にするとTerraformがリソース削除を計画する。適用前にplanのdestroy対象を確認する。特にRDSとS3は、現状ではデータを保持せず削除する設定である。
+
+## Pre-commit
+```
+pre-commit sample-config | out-file .pre-commit-config.yaml -encoding utf8
+```
+.pre-commit-config.yamlを作る。外部通信は発生しない。初回のみ実行。
+```
+pre-commit install
+```
+Git hookを有効化する。.git/hooks/pre-commitを作成する。外部通信は発生しない。初回のみ実行。Git clone後に実行。
+```
+pre-commit install-hooks
+```
+hook用の設定やライブラリの取得。外部通信が発生する。初回のみ実行。
+```
+pre-commit run --all-files
+```
+動作確認コマンド。全ファイルに対してチェックを実行。
+
+test
