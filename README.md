@@ -82,7 +82,8 @@ Entra ID の App registration には、Terraform output の `cognito_entra_idp_r
 - terraform planはgitlab-ciの中で実装する。
 CIはGitlab, CDはHCP Terraformという単位でプラットフォームを分離する。
 - `TF_TOKEN_app_terraform_io`: GitlabのVariablesに設定
-
+tflint, gitleaks, terraform fmtはpre-commit時に確認しているはずなのでMR時にのみ実行。
+terraform planはpush時にのみ実行。Mergeの際はHCP Terraformで勝手にPlanする。
 
 ### 方針
 - ブランチ戦略: Github Flow
