@@ -166,7 +166,8 @@ pre-commit install-hooks
 ```
 hook用の設定やライブラリの取得。外部通信が発生する。初回のみ実行。
 ```
-pre-commit run --all-files
+pre-commit run # Stageファイルのみを対象に実行
+pre-commit run --all-files # 全ファイルを対象に実行
 ```
 動作確認コマンド。全ファイルに対してチェックを実行。
 

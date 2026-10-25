@@ -16,13 +16,23 @@ repos:
         language: system
         pass_filenames: false
 
-      - id: tflint
-        name: tflint
-        entry: bash -c 'cd terraform/env/dev/ && tflint --init && tflint -f compact --config=../../.tflint.hcl'
+      - id: tflint-init
+        name: tflint init
+        entry: tflint --chdir=terraform/env/dev --config=../../.tflint.hcl --init
         language: system
         types: [terraform]
         files: ^terraform/env/.*\.tf$
         pass_filenames: false
+        verbose: true
+
+      - id: tflint
+        name: tflint
+        entry: tflint --chdir=terraform/env/dev --config=../../.tflint.hcl
+        language: system
+        types: [terraform]
+        files: ^terraform/env/.*\.tf$
+        pass_filenames: false
+        verbose: true
 
       - id: terraform-fmt
         name: terraform fmt
@@ -33,8 +43,9 @@ repos:
 
       - id: terraform-validate
         name: terraform validate
-        entry: bash -c 'cd terraform/env/dev/ && terraform validate'
+        entry: terraform -chdir=terraform/env/dev validate -no-color
         language: system
         types: [terraform]
         files: ^terraform/env/.*\.tf$
         pass_filenames: false
+        verbose: true
