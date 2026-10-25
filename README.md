@@ -173,3 +173,4 @@ pre-commit run --all-files
 VSCodeのCommitボタンからhookされない場合は以下のように修正。
 - .git/config：core.hooksPath に C:/Users/katsu/OneDrive/デスクトップ/work/spa-infra/.git/hooks を設定する。Git がこのリポジトリで使う hook の場所を明示する。
 - pre-commit install --overwrite を実行。.git/hooks/pre-commitが再生成される。
+- VS Codeのsettings.jsonの`git.path`にgitのパスを指定。`C:\\Program Files\\Git\\cmd\\git.exe`とか。
