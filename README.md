@@ -158,6 +158,7 @@ pre-commit sample-config | out-file .pre-commit-config.yaml -encoding utf8
 ```
 .pre-commit-config.yamlを作る。外部通信は発生しない。初回のみ実行。
 ```
+git config --local --unset-all core.hooksPath
 pre-commit install
 ```
 Git hookを有効化する。.git/hooks/pre-commitを作成する。外部通信は発生しない。初回のみ実行。Git clone後に実行。
@@ -175,3 +176,6 @@ VSCodeのCommitボタンからhookされない場合は以下のように修正�
 - .git/config：core.hooksPath に C:/Users/katsu/OneDrive/デスクトップ/work/spa-infra/.git/hooks を設定する。Git がこのリポジトリで使う hook の場所を明示する。
 - pre-commit install --overwrite を実行。.git/hooks/pre-commitが再生成される。
 - VS Codeのsettings.jsonの`git.path`にgitのパスを指定。`C:\\Program Files\\Git\\cmd\\git.exe`とか。
+
+core.hooksPath が .git/hooks に設定されていても、pre-commit は設定が明示されていると hook のインストールを拒否します。設定が標準の .git/hooks を指しているなら、リポジトリのルートで PowerShell から次を実行してください。
+これで Git の標準 hook ディレクトリが使われ、コミット時に pre-commit が実行されるはずです。core.hooksPath を意図的に別の hook 管理ツール用に設定している場合は、先にその影響を確認してください。
