@@ -109,6 +109,17 @@ resource "aws_lb_listener_rule" "frontend" {
       }
     }
   }
+
+  transform {
+    type = "url-rewrite"
+
+    url_rewrite_config {
+      rewrite {
+        regex   = "^/$"
+        replace = "/index.html"
+      }
+    }
+  }
 }
 
 resource "aws_lb_target_group" "frontend" {
@@ -121,8 +132,8 @@ resource "aws_lb_target_group" "frontend" {
 
   health_check {
     protocol = "HTTPS"
-    path     = "/"
-    matcher  = "200-399,405"
+    path     = "/index.html"
+    matcher  = "200-399"
   }
 }
 
