@@ -1,9 +1,7 @@
-data "aws_caller_identity" "current" {} # AWS環境情報の取得
-
 # S3設定
 resource "aws_s3_bucket" "frontend" {
-  count         = var.resource_flags.s3_enabled ? 1 : 0
-  bucket_prefix = "${var.common.project_name}-okmr-${data.aws_caller_identity.current.account_id}-"
+  count  = var.resource_flags.s3_enabled ? 1 : 0
+  bucket = "spa-okmu-1480180708.ap-northeast-1.elb.amazonaws.com"
 }
 
 resource "aws_s3_bucket_versioning" "frontend" {
