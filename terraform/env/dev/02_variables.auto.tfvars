@@ -2,8 +2,8 @@
 resource_flags = {
   api_tasks_enabled     = false
   api_stack_enabled     = false
-  frontend_edge_enabled = false
-  s3_enabled            = false
+  frontend_edge_enabled = true
+  s3_enabled            = true
   rds_enabled           = false
 }
 
