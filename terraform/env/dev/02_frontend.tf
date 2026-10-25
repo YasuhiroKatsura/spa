@@ -1,6 +1,5 @@
 data "aws_caller_identity" "current" {} # AWS環境情報の取得
 
-
 resource "aws_s3_bucket" "frontend" {
   count  = var.resource_flags.s3_enabled ? 1 : 0
   bucket = "${var.common.project_name}-${data.aws_caller_identity.current.account_id}.ap-northeast-1.elb.amazonaws.com"
