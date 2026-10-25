@@ -1,7 +1,7 @@
 # S3設定
 resource "aws_s3_bucket" "frontend" {
-  count  = var.resource_flags.s3_enabled ? 1 : 0
-  bucket = "spa-okmu-1480180708.ap-northeast-1.elb.amazonaws.com"
+  count         = var.resource_flags.s3_enabled ? 1 : 0
+  bucket_prefix = "${var.common.project_name}-okmr-"
 }
 
 resource "aws_s3_bucket_versioning" "frontend" {
@@ -80,6 +80,34 @@ resource "aws_lb_listener" "frontend" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.frontend[0].arn
+  }
+}
+
+resource "aws_lb_listener_rule" "frontend" {
+  count        = var.resource_flags.frontend_edge_enabled ? 1 : 0
+  listener_arn = aws_lb_listener.frontend[0].arn
+  priority     = 1
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.frontend[0].arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/*"]
+    }
+  }
+
+  transform {
+    type = "host-header-rewrite"
+
+    host_header_rewrite_config {
+      rewrite {
+        regex   = "^.*$"
+        replace = "${aws_s3_bucket.frontend[0].bucket}.s3.${var.common.region}.amazonaws.com"
+      }
+    }
   }
 }
 
