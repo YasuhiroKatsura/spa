@@ -108,10 +108,12 @@ sg_conf = { # Security Group設定
       }
     }
     egress_rules = {
-      egress_to_all = {
-        description = "Allow all outbound traffic"
-        cidr_ipv4   = ["0.0.0.0/0"]
-        ip_protocol = "-1"
+      egress_to_s3_endpoint = {
+        description                   = "Allow HTTPS to the S3 VPC endpoint"
+        referenced_security_group_key = "vpc_endpt_for_s3"
+        from_port                     = 443
+        to_port                       = 443
+        ip_protocol                   = "tcp"
       }
     }
   }
