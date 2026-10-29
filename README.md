@@ -179,3 +179,5 @@ VSCodeのCommitボタンからhookされない場合は以下のように修正�
 
 core.hooksPath が .git/hooks に設定されていても、pre-commit は設定が明示されていると hook のインストールを拒否します。設定が標準の .git/hooks を指しているなら、リポジトリのルートで PowerShell から次を実行してください。
 これで Git の標準 hook ディレクトリが使われ、コミット時に pre-commit が実行されるはずです。core.hooksPath を意図的に別の hook 管理ツール用に設定している場合は、先にその影響を確認してください。
+
+接続先: `http://spa-okmu-1480180708.ap-northeast-1.elb.amazonaws.com`
