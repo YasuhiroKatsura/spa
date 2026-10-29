@@ -62,7 +62,7 @@ data "aws_network_interface" "vpc_endpt_s3" {
 # ALB設定
 resource "aws_lb" "frontend" {
   count              = var.resource_flags.frontend_edge_enabled ? 1 : 0
-  name               = "${var.common.project_name}-okmu" # FQDN: ${var.common.project_name}.ap-northeast-1.elb.amazonaws.com
+  name               = "${var.common.project_name}-okmr" # FQDN: ${var.common.project_name}.ap-northeast-1.elb.amazonaws.com
   internal           = false
   load_balancer_type = "application"
   security_groups    = [module.sg.id["frontend_alb"]]

@@ -1,0 +1,4 @@
+# gitleaksは過去のcommit logも調査対象とするため、誤検知された過去commitに対して無視設定する。
+
+87cbaf9fe488e723c4ca9d5679fa2f8f434fbd5b:terraform/env/dev/01_variables.auto.tfvars:generic-api-key:113
+1f2f5d0d236b451107f85b88f2c606d372d1d0cc:terraform/env/dev/01_variables.auto.tfvars:generic-api-key:113

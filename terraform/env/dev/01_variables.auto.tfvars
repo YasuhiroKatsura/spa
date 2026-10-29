@@ -31,7 +31,7 @@ sg_conf = { # Security Group設定
         from_port                     = 80
         to_port                       = 80
         ip_protocol                   = "tcp"
-        referenced_security_group_key = "api_alb"
+        referenced_security_group_key = "api_alb" # gitleaks:allow
       }
     }
     egress_rules = {
@@ -51,7 +51,7 @@ sg_conf = { # Security Group設定
         from_port                     = 80
         to_port                       = 80
         ip_protocol                   = "tcp"
-        referenced_security_group_key = "vpc_link_for_apigw"
+        referenced_security_group_key = "vpc_link_for_apigw" # gitleaks:allow
       }
     }
     egress_rules = {
@@ -71,7 +71,7 @@ sg_conf = { # Security Group設定
         from_port                     = 80
         to_port                       = 80
         ip_protocol                   = "tcp"
-        referenced_security_group_key = "api_alb"
+        referenced_security_group_key = "api_alb" # gitleaks:allow
       }
     }
   }
@@ -84,7 +84,7 @@ sg_conf = { # Security Group設定
         from_port                     = 5432
         to_port                       = 5432
         ip_protocol                   = "tcp"
-        referenced_security_group_key = "ecs_service_main"
+        referenced_security_group_key = "ecs_service_main" # gitleaks:allow
       }
     }
     egress_rules = {
@@ -108,10 +108,12 @@ sg_conf = { # Security Group設定
       }
     }
     egress_rules = {
-      egress_to_all = {
-        description = "Allow all outbound traffic"
-        cidr_ipv4   = ["0.0.0.0/0"]
-        ip_protocol = "-1"
+      egress_to_s3_endpoint = {
+        description                   = "Allow HTTPS to the S3 VPC endpoint"
+        referenced_security_group_key = "vpc_endpt_for_s3" # gitleaks:allow
+        from_port                     = 443
+        to_port                       = 443
+        ip_protocol                   = "tcp"
       }
     }
   }
@@ -121,7 +123,7 @@ sg_conf = { # Security Group設定
     ingress_rules = {
       ingress_from_frontend_alb = {
         description                   = "Allow HTTPS from the frontend load balancer"
-        referenced_security_group_key = "frontend_alb"
+        referenced_security_group_key = "frontend_alb" # gitleaks:allow
         from_port                     = 443
         to_port                       = 443
         ip_protocol                   = "tcp"
