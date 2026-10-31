@@ -132,8 +132,10 @@ resource "aws_lb_target_group" "frontend" {
 
   health_check {
     protocol = "HTTPS"
-    path     = "/index.html"
-    matcher  = "200-399"
+    path     = "/"
+    # Health checks go directly to the endpoint IP and do not use the listener's Host rewrite.
+    # S3 may return a 4xx for this request even while the endpoint is reachable.
+    matcher = "200-499"
   }
 }
 
