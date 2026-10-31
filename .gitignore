@@ -1,3 +1,7 @@
+# VS Code
+sample-spa.code-workspace
+
+#Terraform
 **/.terraform/
 *.tfstate
 *.tfstate.*
@@ -5,6 +9,27 @@
 crash.log
 crash.*.log
 
-old/
+# Nuxt dev/build outputs
+frontend/.output
+frontend/.data
+frontend/.nuxt
+frontend/.nitro
+frontend/.cache
+frontend/dist
 
-spa-infra.code-workspace
+# Node dependencies
+frontend/node_modules
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+.env.*
+!.env.example
