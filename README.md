@@ -58,6 +58,10 @@ gitleaks version 8.30.1
 ### 構成図
 xxx
 
+### Frontend配信 (ALB → S3)
+
+Frontend ALBはS3 Interface VPC EndpointのENIをIPターゲットとして登録し、listener ruleでS3バケットのHost名へ書き換えてオブジェクトを配信する。Target Groupのhealth checkはlistener ruleを通らずENIへ直接送られるため、Host書き換えは適用されない。S3はこのhealth checkに4xxを返す場合があるので、health checkはHTTP 2xx〜4xxを正常応答として扱い、接続失敗や5xxを異常として検出する。
+
 ### CognitoとEntra IDのフェデレーション
 
 `terraform/env/dev/2_auth.tf` は、Cognito Hosted UI と Microsoft Entra ID の OIDC フェデレーションを定義する。
@@ -181,3 +185,33 @@ core.hooksPath が .git/hooks に設定されていても、pre-commit は設定
 これで Git の標準 hook ディレクトリが使われ、コミット時に pre-commit が実行されるはずです。core.hooksPath を意図的に別の hook 管理ツール用に設定している場合は、先にその影響を確認してください。
 
 接続先: `http://spa-okmr-1480180708.ap-northeast-1.elb.amazonaws.com`
+
+
+## Frontend
+### Setup
+```bash
+npm intall # package-lock.jsonを更新する
+npm ci # package-lock.jsonを更新しない
+```
+
+### Development Server
+Start the development server on `http://localhost:3000`:
+
+```bash
+npm run dev -- --port 3000
+```
+
+ビルド(.output/server)
+```bash
+npm run build
+```
+
+Locally preview production build:
+```bash
+npm run preview
+```
+
+静的ファイル出力(.output/public)
+```bash
+npm run generate
+```
