@@ -24,6 +24,9 @@ frontend/node_modules
 logs
 *.log
 
+# Chat notes
+/chat/
+
 # Misc
 .DS_Store
 .fleet
