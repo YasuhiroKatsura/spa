@@ -118,7 +118,7 @@ terraform planはpush時にのみ実行。Mergeの際はHCP Terraformで勝手�
   - アプリケーション固有のリソース（ECS, EC2, RDS等）
   - 変数の種類が多く、ルート側にそのままパラメータを露出させることになる場合
 
-[managed login page](https://spa-auth.auth.ap-northeast-1.amazoncognito.com/login?client_id=1u3j9e23em0405faeqhr5mb8tm&response_type=code&scope=email+openid+profile&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F)
+[managed login page](https://spa-auth.auth.ap-northeast-1.amazoncognito.com/login?client_id=51hh08k8vd56o89b8odirjej2v&response_type=code&scope=email+openid+profile&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F)
 
 ## その他
 ### 参考情報
@@ -197,8 +197,10 @@ npm ci # package-lock.jsonを更新しない
 ### Development Server
 Start the development server on `http://localhost:3000`:
 
+開発用サーバーです。ソースコードの変更がすぐ反映されます。作業中はこちらを使います。
+
 ```bash
-npm run dev -- --port 3000
+npx nuxt dev --port 3000
 ```
 
 ビルド(.output/server)
@@ -206,7 +208,7 @@ npm run dev -- --port 3000
 npm run build
 ```
 
-Locally preview production build:
+Locally preview production build: npm run build で作った本番用の成果物を、ローカルで確認するためのサーバ
 ```bash
 npm run preview
 ```
