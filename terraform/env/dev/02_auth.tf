@@ -46,8 +46,8 @@ resource "aws_cognito_user_pool_client" "auth" {
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_scopes                 = ["openid", "email", "profile"]
-  callback_urls                        = ["http://localhost:8080/"] # EntraIDの認証成功後にリダイレクトされるURL
-  logout_urls                          = ["http://localhost:8080/"] # EntraIDのログアウト後にリダイレクトされるURL
+  callback_urls                        = ["http://localhost:8080/"]                         # EntraIDの認証成功後にリダイレクトされるURL
+  logout_urls                          = ["http://localhost:8080/"]                         # EntraIDのログアウト後にリダイレクトされるURL
   supported_identity_providers         = [aws_cognito_identity_provider.auth.provider_name] # EntraIDでのログインのみを許可
 }
 
