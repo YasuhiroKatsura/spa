@@ -2,10 +2,11 @@
 
 ## 初期設定・各種コマンド
 git clone後以下を実行。
-```
-> pwd
+```bash
+$ pwd
 <work directory>\sample-spa\terraform\env\dev
-> terraform init
+
+$ terraform init
 ```
 
 ## Terraform設計方針
