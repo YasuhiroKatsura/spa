@@ -36,17 +36,7 @@
 ## 構成図
 TBD
 
-
 ## 技術スタック
-
-| 領域 | 技術 | コード管理 |
-|---|---|---|
-| フロントエンド | Nuxt | npm |
-| バックエンド | Java | Gradle |
-| インフラ | AWS、Ansible、Datadog | Terraform |
-
-## 技術スタック
-<!-- ## Requirements -->
 | 領域 | 製品名 | バージョン | 用途 |
 |---|---|---|---|
 | Infra | [amazoncorretto](https://hub.docker.com/hardened-images/catalog/dhi/amazoncorretto?tagDefinitionId=amazoncorretto%2Fdebian-13%2F21-fips-dev) | 21-alpine | API用ベースコンテナイメージxxx |
