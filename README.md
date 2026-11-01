@@ -118,7 +118,7 @@ terraform planはpush時にのみ実行。Mergeの際はHCP Terraformで勝手�
   - アプリケーション固有のリソース（ECS, EC2, RDS等）
   - 変数の種類が多く、ルート側にそのままパラメータを露出させることになる場合
 
-[managed login page](https://spa-auth.auth.ap-northeast-1.amazoncognito.com/login?client_id=1u3j9e23em0405faeqhr5mb8tm&response_type=code&scope=email+openid+profile&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F)
+[managed login page](https://spa-auth.auth.ap-northeast-1.amazoncognito.com/login?client_id=51hh08k8vd56o89b8odirjej2v&response_type=code&scope=email+openid+profile&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2F)
 
 ## その他
 ### 参考情報
@@ -176,13 +176,19 @@ pre-commit run --all-files # 全ファイルを対象に実行
 ```
 動作確認コマンド。全ファイルに対してチェックを実行。
 
-VSCodeのCommitボタンからhookされない場合は以下のように修正。
-- .git/config：core.hooksPath に C:/Users/katsu/OneDrive/デスクトップ/work/spa-infra/.git/hooks を設定する。Git がこのリポジトリで使う hook の場所を明示する。
-- pre-commit install --overwrite を実行。.git/hooks/pre-commitが再生成される。
-- VS Codeのsettings.jsonの`git.path`にgitのパスを指定。`C:\\Program Files\\Git\\cmd\\git.exe`とか。
+VS CodeのCommitボタンからhookされない場合は、リポジトリのルートで以下を実行してhookを再生成する。
+```
+pre-commit install --overwrite
+```
+`git config --show-origin --get-all core.hooksPath`でhookの保存先も確認する。別のhook管理ツール用に設定されている場合は、その設定を確認してからpre-commitと保存先を揃える。VS Codeがターミナルと異なるGitを使っている場合は、VS Codeの`git.path`をターミナルで使うGitに合わせる。
 
-core.hooksPath が .git/hooks に設定されていても、pre-commit は設定が明示されていると hook のインストールを拒否します。設定が標準の .git/hooks を指しているなら、リポジトリのルートで PowerShell から次を実行してください。
-これで Git の標準 hook ディレクトリが使われ、コミット時に pre-commit が実行されるはずです。core.hooksPath を意図的に別の hook 管理ツール用に設定している場合は、先にその影響を確認してください。
+`pre-commit run --all-files`で全ファイルを検査できる。Terraformの形式チェックもCIと同じ`terraform fmt -check`で行い、形式不一致があればコミットを止める。
+
+Windowsでpre-commitがSQLite接続時にクラッシュする場合、PATH上でAWS CLIの`sqlite3.dll`がAnacondaのDLLより先に読み込まれている可能性がある。Anacondaの`Library\bin`をAWS CLIより前に配置し、VS Codeを再起動する。たとえばVS Codeをすべて終了した後、PowerShellから次のように起動できる。
+```
+$env:PATH = "$env:USERPROFILE\anaconda3\Library\bin;$env:PATH"
+code .
+```
 
 接続先: `http://spa-okmr-1480180708.ap-northeast-1.elb.amazonaws.com`
 
@@ -197,8 +203,10 @@ npm ci # package-lock.jsonを更新しない
 ### Development Server
 Start the development server on `http://localhost:3000`:
 
+開発用サーバーです。ソースコードの変更がすぐ反映されます。作業中はこちらを使います。
+
 ```bash
-npm run dev -- --port 3000
+npx nuxt dev --port 3000
 ```
 
 ビルド(.output/server)
@@ -206,7 +214,7 @@ npm run dev -- --port 3000
 npm run build
 ```
 
-Locally preview production build:
+Locally preview production build: npm run build で作った本番用の成果物を、ローカルで確認するためのサーバ
 ```bash
 npm run preview
 ```
