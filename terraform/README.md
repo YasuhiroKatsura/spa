@@ -24,25 +24,25 @@ git clone後以下を実行。
 ### Terraformディレクトリ構成
 ```text
 .
-├── terraform/
-│   ├── env/
-│   │   └── dev/
-│   │       └── templates/ # json形式のポリシーを格納
-│   │       └── .terraform.lock.hcl
-│   │       └── 00_backend.tf
-│   │       └── 01_call_modules.tf # モジュール呼び出し
-│   │       └── 01_variables.auto.tfvars # モジュール呼び出し時のパラメータ設定
-│   │       └── 01_variables.tf # モジュール呼び出し時の変数定義
-│   │       └── 02_api.tf # ECS関連の実装
-│   │       └── 02_auth.tf # Cognito関連の実装
-│   │       └── 02_database.tf # RDS関連の実装
-│   │       └── 02_frontend.tf # Frontend用S3関連の実装
-│   │       └── 02_variables.auto.tfvars # root moduleのパラメータ設定
-│   │       └── 02_variables.tf # root moduleの変数定義
-│   └── modules/
-│       ├── iam/ # IAM関連の共通化
-│       ├── sg/ # Security Group関連の共通化
-│       └── vpc/ # VPC, Subnet関連の共通化
+└── terraform/
+    ├── env/
+    │   └── dev/
+    │       └── templates/ # json形式のポリシーを格納
+    │       └── .terraform.lock.hcl
+    │       └── 00_backend.tf
+    │       └── 01_call_modules.tf # モジュール呼び出し
+    │       └── 01_variables.auto.tfvars # モジュール呼び出し時のパラメータ設定
+    │       └── 01_variables.tf # モジュール呼び出し時の変数定義
+    │       └── 02_api.tf # ECS関連の実装
+    │       └── 02_auth.tf # Cognito関連の実装
+    │       └── 02_database.tf # RDS関連の実装
+    │       └── 02_frontend.tf # Frontend用S3関連の実装
+    │       └── 02_variables.auto.tfvars # root moduleのパラメータ設定
+    │       └── 02_variables.tf # root moduleの変数定義
+    └── modules/
+        ├── iam/ # IAM関連の共通化
+        ├── sg/ # Security Group関連の共通化
+        └── vpc/ # VPC, Subnet関連の共通化
 ```
 
 ### Terraformセキュリティ方針
