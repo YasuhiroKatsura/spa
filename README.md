@@ -5,6 +5,7 @@
 - Endpointは[こちら](http://spa-okmr-515882119.ap-northeast-1.elb.amazonaws.com/)
 
 ## ディレクトリ構成
+- prjectを複数分けることによる負荷を避けるためモノレポとする。
 
 ```text
 .
@@ -39,7 +40,9 @@ TBD
 ## 技術スタック
 | 領域 | 製品名 | バージョン | 用途 |
 |---|---|---|---|
-| Infra | [amazoncorretto](https://hub.docker.com/hardened-images/catalog/dhi/amazoncorretto?tagDefinitionId=amazoncorretto%2Fdebian-13%2F21-fips-dev) | 21-alpine | API用ベースコンテナイメージxxx |
+| Frontend | [Node.js](https://nodejs.org/ja/download) | 26.13.0 | Javascript実行環境 |
+|  | [npm](https://nodejs.org/ja/download) | 12.2.1 | Node.jsライブラリ管理 |
+| Infra | [amazoncorretto](https://hub.docker.com/hardened-images/catalog/dhi/amazoncorretto?tagDefinitionId=amazoncorretto%2Fdebian-13%2F21-fips-dev) | 21-alpine | API用ベースコンテナイメージ |
 || [Terraform](https://developer.hashicorp.com/terraform/install) | 1.15.1| AWS/Azure/Datadog構成管理 |
 || [TFLint](https://github.com/terraform-linters/tflint/releases) | 0.61.0| terraform lint |
 || [pre-commit](https://pre-commit.com/#installation) | 4.3.0 | pre-commit実行 |
