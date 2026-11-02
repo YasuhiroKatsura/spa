@@ -42,6 +42,7 @@ $ terraform init
     │       └── 02_variables.tf # root moduleの変数定義
     └── modules/
         ├── iam/ # IAM関連の共通化
+        ├── self_signed_cert/ # 自己署名証明書の作成
         ├── sg/ # Security Group関連の共通化
         └── vpc/ # VPC, Subnet関連の共通化
 ```
@@ -53,6 +54,10 @@ $ terraform init
 
 ### Frontend配信
 - ALB→VPC Endpoint→S3の構成をとる。CloudFrontはリッチすぎるので利用しないがちょっと興味あり。
+- 接続先FQDNにはALBのデフォルトDNS名を使う。TerraformのTLS Providerで自己署名証明書を作成し、ACMにインポートしてALBのHTTPSリスナーに設定する（ブラウザーでは証明書の警告が表示される）。
+  - 最も費用を抑えられる構成。
+    独自のドメイン発行をする場合名前の維持、DNS Host Zoneの利用料金にコストがかかる。
+  - HTTPアクセスはALBでHTTPSへリダイレクトする。
 - S3のフロントエンドはhost headerで宛先バケットを判断しているので、listener ruleでhost headerがバケット名を含むように書き換える。
 - ヘルスチェックはlisterner ruleを介さないのでhost headerの書き換えが適用されない。
   よってS3は300, 400台の応答を返すので、2xx～4xxを正常応答として扱う。

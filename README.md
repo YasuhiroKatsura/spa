@@ -13,23 +13,11 @@
 │   └── merge_request_templates/
 ├── ansible/
 ├── backend/
-│   └── src/
-├── chat/
 ├── ci/
-│   └── scripts/
 ├── frontend/
-│   ├── app/
-│   ├── patches/
-│   └── public/
 ├── terraform/
-│   ├── env/
-│   │   └── dev/
-│   │       └── templates/
-│   └── modules/
-│       ├── iam/
-│       ├── sg/
-│       └── vpc/
 ├── .gitlab-ci.yaml
+├── .gitleaksignore
 ├── .pre-commit-config.yaml
 └── README.md
 ```
