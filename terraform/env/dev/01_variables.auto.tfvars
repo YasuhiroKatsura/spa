@@ -4,6 +4,10 @@ common = { # プロジェクト共通の設定
   region       = "ap-northeast-1"
 }
 
+self_signed_cert_conf = {
+  domain_name = "*.ap-northeast-1.elb.amazonaws.com"
+}
+
 vpc_conf = { # VPC設定
   vpc = {
     cidr_block = "10.0.0.0/16"
@@ -100,10 +104,17 @@ sg_conf = { # Security Group設定
     description = "Security group for the public frontend load balancer"
     ingress_rules = {
       ingress_from_internet = {
-        description = "Allow public HTTP traffic"
+        description = "Allow public HTTP traffic for HTTPS redirect"
         cidr_ipv4   = ["0.0.0.0/0"]
         from_port   = 80
         to_port     = 80
+        ip_protocol = "tcp"
+      }
+      ingress_https_from_internet = {
+        description = "Allow public HTTPS traffic"
+        cidr_ipv4   = ["0.0.0.0/0"]
+        from_port   = 443
+        to_port     = 443
         ip_protocol = "tcp"
       }
     }

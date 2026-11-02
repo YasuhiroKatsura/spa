@@ -40,6 +40,17 @@ resource "aws_vpc_endpoint" "s3" {
   security_group_ids = [module.sg.id["vpc_endpt_for_s3"]]
 }
 
+# 自己証明書をACMにインポート
+resource "aws_acm_certificate" "frontend" {
+  count            = var.resource_flags.frontend_edge_enabled ? 1 : 0
+  private_key      = module.self_signed_cert[0].private_key_pem
+  certificate_body = module.self_signed_cert[0].certificate_pem
+
+  lifecycle {
+    create_before_destroy = true # 古い証明書を削除する前に新しい証明書を作成する
+  }
+}
+
 data "aws_network_interface" "vpc_endpt_s3" {
   for_each = var.resource_flags.frontend_edge_enabled ? var.vpc_conf.public_subnets : {}
 
@@ -62,7 +73,7 @@ data "aws_network_interface" "vpc_endpt_s3" {
 # ALB設定
 resource "aws_lb" "frontend" {
   count              = var.resource_flags.frontend_edge_enabled ? 1 : 0
-  name               = "${var.common.project_name}-okmr" # FQDN: ${var.common.project_name}.ap-northeast-1.elb.amazonaws.com
+  name               = "${var.common.project_name}-okmr"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [module.sg.id["frontend_alb"]]
@@ -71,11 +82,13 @@ resource "aws_lb" "frontend" {
   enable_deletion_protection = false
 }
 
-resource "aws_lb_listener" "frontend" {
+resource "aws_lb_listener" "frontend_https" {
   count             = var.resource_flags.frontend_edge_enabled ? 1 : 0
   load_balancer_arn = aws_lb.frontend[0].arn
-  port              = 80
-  protocol          = "HTTP"
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = aws_acm_certificate.frontend[0].arn
 
   default_action {
     type             = "forward"
@@ -83,9 +96,26 @@ resource "aws_lb_listener" "frontend" {
   }
 }
 
+resource "aws_lb_listener" "frontend_http" {
+  count             = var.resource_flags.frontend_edge_enabled ? 1 : 0
+  load_balancer_arn = aws_lb.frontend[0].arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
 resource "aws_lb_listener_rule" "frontend" {
   count        = var.resource_flags.frontend_edge_enabled ? 1 : 0
-  listener_arn = aws_lb_listener.frontend[0].arn
+  listener_arn = aws_lb_listener.frontend_https[0].arn
   priority     = 1
 
   action {
