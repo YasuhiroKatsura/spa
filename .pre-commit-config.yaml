@@ -36,7 +36,7 @@ repos:
 
       - id: terraform-fmt
         name: terraform fmt
-        entry: terraform fmt -check -recursive terraform/
+        entry: terraform fmt -recursive terraform/
         language: system
         types: [terraform]
         files: ^terraform/.*\.tf$
