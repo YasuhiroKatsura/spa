@@ -91,8 +91,13 @@ resource "aws_lb_listener" "frontend_https" {
   certificate_arn   = aws_acm_certificate.frontend[0].arn
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.frontend[0].arn
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "Not Found"
+      status_code  = "404"
+    }
   }
 }
 
@@ -117,6 +122,17 @@ resource "aws_lb_listener_rule" "frontend" {
   count        = var.resource_flags.frontend_edge_enabled ? 1 : 0
   listener_arn = aws_lb_listener.frontend_https[0].arn
   priority     = 1
+
+  action {
+    type = "authenticate-cognito"
+
+    authenticate_cognito {
+      user_pool_arn       = aws_cognito_user_pool.auth.arn
+      user_pool_client_id = aws_cognito_user_pool_client.frontend_alb.id
+      user_pool_domain    = aws_cognito_user_pool_domain.auth.domain
+      scope               = "openid email profile"
+    }
+  }
 
   action {
     type             = "forward"

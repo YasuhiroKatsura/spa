@@ -126,6 +126,13 @@ sg_conf = { # Security Group設定
         to_port                       = 443
         ip_protocol                   = "tcp"
       }
+      egress_to_cognito = {
+        description = "Allow HTTPS to Cognito for ALB authentication"
+        cidr_ipv4   = ["0.0.0.0/0"]
+        from_port   = 443
+        to_port     = 443
+        ip_protocol = "tcp"
+      }
     }
   }
   vpc_endpt_for_s3 = {

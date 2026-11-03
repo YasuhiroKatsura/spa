@@ -46,9 +46,22 @@ resource "aws_cognito_user_pool_client" "auth" {
   allowed_oauth_flows                  = ["code"]
   allowed_oauth_flows_user_pool_client = true
   allowed_oauth_scopes                 = ["openid", "email", "profile"]
-  callback_urls                        = ["http://localhost:8080/"]                         # EntraIDの認証成功後にリダイレクトされるURL
-  logout_urls                          = ["http://localhost:8080/"]                         # EntraIDのログアウト後にリダイレクトされるURL
-  supported_identity_providers         = [aws_cognito_identity_provider.auth.provider_name] # EntraIDでのログインのみを許可
+  callback_urls                        = ["https://${aws_lb.frontend[0].dns_name}/oauth2/idpresponse"] # EntraIDの認証成功後にリダイレクトされるURL (ALBがCognitoから認証結果を受け取るcallback URL)
+  logout_urls                          = ["https://${aws_lb.frontend[0].dns_name}/"]                   # EntraIDのログアウト後にリダイレクトされるURL
+  supported_identity_providers         = [aws_cognito_identity_provider.auth.provider_name]            # EntraIDでのログインのみを許可
+}
+
+resource "aws_cognito_user_pool_client" "frontend_alb" {
+  name         = "${var.common.project_name}-frontend-alb"
+  user_pool_id = aws_cognito_user_pool.auth.id
+
+  generate_secret = true
+
+  allowed_oauth_flows                  = ["code"]
+  allowed_oauth_flows_user_pool_client = true
+  allowed_oauth_scopes                 = ["openid", "email", "profile"]
+  callback_urls                        = ["https://${aws_lb.frontend[0].dns_name}/oauth2/idpresponse"]
+  supported_identity_providers         = [aws_cognito_identity_provider.auth.provider_name]
 }
 
 resource "aws_cognito_user_pool_domain" "auth" {
@@ -59,5 +72,11 @@ resource "aws_cognito_user_pool_domain" "auth" {
 resource "aws_cognito_managed_login_branding" "auth" {
   user_pool_id                = aws_cognito_user_pool.auth.id
   client_id                   = aws_cognito_user_pool_client.auth.id
+  use_cognito_provided_values = true
+}
+
+resource "aws_cognito_managed_login_branding" "frontend_alb" {
+  user_pool_id                = aws_cognito_user_pool.auth.id
+  client_id                   = aws_cognito_user_pool_client.frontend_alb.id
   use_cognito_provided_values = true
 }
