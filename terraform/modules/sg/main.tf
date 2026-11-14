@@ -69,6 +69,10 @@ resource "aws_security_group" "this" {
   description = each.value.description
   vpc_id      = var.vpc_id
   egress      = [] #AWSデフォルトの全送信許可ルールを明示的に外す
+
+  lifecycle {
+    ignore_changes = [egress]
+  }
 }
 
 resource "aws_vpc_security_group_ingress_rule" "this" {
