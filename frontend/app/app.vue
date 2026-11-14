@@ -1,3 +1,128 @@
+<script setup lang="ts">
+import {
+  InteractionRequiredAuthError,
+  PublicClientApplication,
+  type AccountInfo
+} from '@azure/msal-browser'
+
+const config = useRuntimeConfig()
+const tenantId = config.public.entraTenantId
+const clientId = config.public.entraClientId
+const apiScope = config.public.entraApiScope
+const apiBaseUrl = config.public.apiBaseUrl
+
+const account = ref<AccountInfo | null>(null)
+const status = ref('認証設定を確認しています')
+const errorMessage = ref('')
+const apiResponse = ref('')
+const isReady = ref(false)
+const isRequesting = ref(false)
+
+let msalApp: PublicClientApplication | undefined
+
+onMounted(async () => {
+  try {
+    if (!tenantId || !clientId || !apiScope || !apiBaseUrl) {
+      throw new Error('フロントエンドの認証設定が不足しています。.envを確認してください。')
+    }
+
+    msalApp = new PublicClientApplication({
+      auth: {
+        clientId,
+        authority: `https://login.microsoftonline.com/${tenantId}`,
+        redirectUri: window.location.origin
+      },
+      cache: {
+        cacheLocation: 'sessionStorage'
+      }
+    })
+
+    await msalApp.initialize()
+    const redirectResult = await msalApp.handleRedirectPromise()
+    const signedInAccount = redirectResult?.account ?? msalApp.getActiveAccount() ?? msalApp.getAllAccounts()[0] ?? null
+    if (signedInAccount) {
+      msalApp.setActiveAccount(signedInAccount)
+    }
+
+    account.value = signedInAccount
+    status.value = signedInAccount ? '認証済み' : '未認証'
+    isReady.value = true
+  } catch (error) {
+    status.value = '認証設定エラー'
+    errorMessage.value = error instanceof Error ? error.message : '認証の初期化に失敗しました。'
+  }
+})
+
+async function signIn() {
+  if (!msalApp) return
+
+  errorMessage.value = ''
+  try {
+    await msalApp.loginRedirect({ scopes: [apiScope] })
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : 'サインインを開始できませんでした。'
+  }
+}
+
+async function signOut() {
+  if (!msalApp || !account.value) return
+
+  errorMessage.value = ''
+  try {
+    await msalApp.logoutRedirect({
+      account: account.value,
+      postLogoutRedirectUri: window.location.origin
+    })
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : 'サインアウトできませんでした。'
+  }
+}
+
+async function callApi() {
+  if (!msalApp || !account.value) return
+
+  isRequesting.value = true
+  errorMessage.value = ''
+  apiResponse.value = ''
+  try {
+    let accessToken: string
+    try {
+      const tokenResult = await msalApp.acquireTokenSilent({
+        scopes: [apiScope],
+        account: account.value
+      })
+      accessToken = tokenResult.accessToken
+    } catch (error) {
+      if (!(error instanceof InteractionRequiredAuthError)) {
+        throw error
+      }
+
+      await msalApp.acquireTokenRedirect({
+        scopes: [apiScope],
+        account: account.value
+      })
+      return
+    }
+
+    const response = await fetch(apiBaseUrl, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    })
+    const responseText = await response.text()
+    if (!response.ok) {
+      throw new Error(`APIからHTTP ${response.status}が返されました: ${responseText}`)
+    }
+
+    apiResponse.value = responseText || `HTTP ${response.status}`
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : 'APIの呼び出しに失敗しました。'
+  } finally {
+    isRequesting.value = false
+  }
+}
+</script>
+
 <template>
   <main class="page">
     <NuxtRouteAnnouncer />
@@ -7,7 +132,7 @@
     </header>
 
     <section class="hero">
-      <p class="eyebrow">NUXT + VUE</p>
+      <p class="eyebrow">NUXT + MICROSOFT ENTRA ID</p>
       <h1>サンプルアプリへようこそ</h1>
       <p class="intro">
         フロントエンドの表示を確認するためのサンプル画面です。
@@ -17,15 +142,34 @@
     <section class="api-card" aria-labelledby="api-heading">
       <div class="card-heading">
         <div>
-          <p class="eyebrow">BACKEND CONNECTION</p>
-          <h2 id="api-heading">APIレスポンス</h2>
+          <p class="eyebrow">API GATEWAY JWT AUTHORIZER</p>
+          <h2 id="api-heading">認証とAPI接続</h2>
         </div>
-        <span class="status">未接続</span>
+        <span class="status" :class="{ 'status-authenticated': account }" aria-live="polite">
+          {{ status }}
+        </span>
       </div>
-      <p class="message">バックエンドAPIはまだありません。現在はAPIへの接続を行っていません。</p>
+
+      <p v-if="account" class="message">サインイン中: {{ account.username }}</p>
+      <p v-else class="message">サインインすると、API用のアクセストークンを取得できます。</p>
+
+      <div class="actions">
+        <button v-if="!account" type="button" :disabled="!isReady" @click="signIn">
+          Microsoftでサインイン
+        </button>
+        <template v-else>
+          <button type="button" :disabled="isRequesting" @click="callApi">
+            {{ isRequesting ? 'API呼び出し中...' : '認証付きでAPIを呼び出す' }}
+          </button>
+          <button class="secondary" type="button" @click="signOut">サインアウト</button>
+        </template>
+      </div>
+
+      <pre v-if="apiResponse" class="api-response" aria-live="polite">{{ apiResponse }}</pre>
+      <p v-if="errorMessage" class="error" role="alert">{{ errorMessage }}</p>
     </section>
 
-    <footer>Sample SPA · Built with Nuxt</footer>
+    <footer>Sample SPA · Built with Nuxt and MSAL</footer>
   </main>
 </template>
 
@@ -127,14 +271,65 @@ h2 {
 
 .status {
   padding: 0.45rem 0.7rem;
+  background: #fff5df;
+  color: #88640f;
+  white-space: nowrap;
+}
+
+.status-authenticated {
   background: #e9f7ef;
   color: #247449;
-  white-space: nowrap;
 }
 
 .message {
   margin: 1.5rem 0 0;
   color: #64708a;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+button {
+  padding: 0.7rem 1rem;
+  border: 0;
+  border-radius: 8px;
+  background: #3158b8;
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 650;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+button.secondary {
+  border: 1px solid #d5dceb;
+  background: white;
+  color: #3158b8;
+}
+
+.api-response {
+  overflow: auto;
+  margin: 1.25rem 0 0;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #f5f7fb;
+  color: #172033;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.error {
+  margin: 1rem 0 0;
+  color: #b42318;
+  overflow-wrap: anywhere;
 }
 
 footer {

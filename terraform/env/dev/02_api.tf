@@ -3,6 +3,26 @@ resource "aws_apigatewayv2_api" "api" {
   count         = var.resource_flags.api_stack_enabled ? 1 : 0
   name          = var.common.project_name
   protocol_type = "HTTP"
+
+  cors_configuration {
+    allow_origins = ["https://${aws_lb.frontend[0].dns_name}"]
+    allow_methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+    allow_headers = ["Authorization", "Content-Type"]
+    max_age       = 3600
+  }
+}
+
+resource "aws_apigatewayv2_authorizer" "jwt" {
+  count            = var.resource_flags.api_stack_enabled ? 1 : 0
+  api_id           = aws_apigatewayv2_api.api[0].id
+  name             = "${var.common.project_name}-entra-jwt"
+  authorizer_type  = "JWT"                             # APIGW組み込みのJWT Authorizorを使用
+  identity_sources = ["$request.header.Authorization"] # Authorizationヘッダから認証情報を読み込み
+
+  jwt_configuration {
+    audience = [var.auth_entra_conf.api_audience]
+    issuer   = "https://login.microsoftonline.com/${var.auth_entra_conf.tenant_id}/v2.0"
+  }
 }
 
 resource "aws_apigatewayv2_stage" "api" {
@@ -17,6 +37,12 @@ resource "aws_apigatewayv2_route" "api" {
   api_id    = aws_apigatewayv2_api.api[0].id
   route_key = "$default"
   target    = "integrations/${aws_apigatewayv2_integration.api[0].id}"
+
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.jwt[0].id
+  authorization_scopes = [
+    var.auth_entra_conf.api_scope,
+  ]
 }
 
 resource "aws_apigatewayv2_integration" "api" {
