@@ -1,7 +1,7 @@
 # リソース起動/停止設定
 resource_flags = {
-  api_tasks_enabled     = false
-  api_stack_enabled     = false
+  api_tasks_enabled     = true
+  api_stack_enabled     = true
   frontend_edge_enabled = true
   s3_enabled            = true
   rds_enabled           = false
