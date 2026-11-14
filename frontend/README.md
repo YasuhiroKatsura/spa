@@ -9,6 +9,13 @@ $ pwd
 $ npm ci # package-lock.jsonを更新せずにライブラリをインストール
 ```
 
+認証・API接続用の環境変数を設定する。
+```bash
+$ Copy-Item .env.example .env
+```
+
+`.env`にSPAアプリ登録のクライアントID、APIアプリ登録のscope、Terraform出力のAPI URLを設定する。SPAにはclient secretを設定しない。静的ファイル生成時にこれらの公開設定が成果物に含まれるため、秘密情報を置かないこと。
+
 開発中は以下のコマンドでLocal Serverを立ち上げる。ソースコードの変更が即時反映される。
 ```bash
 npx nuxt dev --port 3000
@@ -30,6 +37,7 @@ $ npm run generate
 ### 基本的な考え方
 - フレームワークにはNuxt.jsを採用。
 - 静的型付けが可能なTypeScriptを採用。
+- Microsoft Entra IDのSPAサインインとアクセストークン取得にはMSAL Browserを利用する。API呼び出しでは`Authorization: Bearer`ヘッダーにアクセストークンを設定する。
 
 ### Frontendディレクトリ構成
 ```text

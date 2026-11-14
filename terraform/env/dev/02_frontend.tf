@@ -123,16 +123,16 @@ resource "aws_lb_listener_rule" "frontend" {
   listener_arn = aws_lb_listener.frontend_https[0].arn
   priority     = 1
 
-  action {
-    type = "authenticate-cognito"
+  # action {
+  #   type = "authenticate-cognito"
 
-    authenticate_cognito {
-      user_pool_arn       = aws_cognito_user_pool.auth.arn
-      user_pool_client_id = aws_cognito_user_pool_client.frontend_alb.id
-      user_pool_domain    = aws_cognito_user_pool_domain.auth.domain
-      scope               = "openid email profile"
-    }
-  }
+  #   authenticate_cognito {
+  #     user_pool_arn       = aws_cognito_user_pool.auth.arn
+  #     user_pool_client_id = aws_cognito_user_pool_client.frontend_alb.id
+  #     user_pool_domain    = aws_cognito_user_pool_domain.auth.domain
+  #     scope               = "openid email profile"
+  #   }
+  # }
 
   action {
     type             = "forward"

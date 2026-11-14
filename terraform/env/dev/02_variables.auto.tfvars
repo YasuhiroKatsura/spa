@@ -35,12 +35,19 @@ database_rds_conf = {
 }
 
 # Cognito設定
-auth_cognito_conf = {
-  entra_tenant_id          = "48d5d751-0dc5-4a60-8a05-d9b5e8e76d72"
-  entra_client_id          = "5016b4cb-4b4e-4e51-b56f-46a1b12de113"
-  entra_oidc_authorize_url = "https://login.microsoftonline.com/48d5d751-0dc5-4a60-8a05-d9b5e8e76d72/oauth2/v2.0/authorize"
-  entra_oidc_issuer_url    = "https://login.microsoftonline.com/48d5d751-0dc5-4a60-8a05-d9b5e8e76d72/v2.0"
-  entra_oidc_jwks_url      = "https://login.microsoftonline.com/48d5d751-0dc5-4a60-8a05-d9b5e8e76d72/discovery/v2.0/keys"
-  entra_oidc_token_url     = "https://login.microsoftonline.com/48d5d751-0dc5-4a60-8a05-d9b5e8e76d72/oauth2/v2.0/token"
-  entra_oidc_userinfo_url  = "https://login.microsoftonline.com/48d5d751-0dc5-4a60-8a05-d9b5e8e76d72/oauth2/v2.0/userinfo"
+# auth_cognito_conf = {
+#   entra_tenant_id          = "48d5d751-0dc5-4a60-8a05-d9b5e8e76d72"
+#   entra_client_id          = "5016b4cb-4b4e-4e51-b56f-46a1b12de113"
+#   entra_oidc_authorize_url = "https://login.microsoftonline.com/48d5d751-0dc5-4a60-8a05-d9b5e8e76d72/oauth2/v2.0/authorize"
+#   entra_oidc_issuer_url    = "https://login.microsoftonline.com/48d5d751-0dc5-4a60-8a05-d9b5e8e76d72/v2.0"
+#   entra_oidc_jwks_url      = "https://login.microsoftonline.com/48d5d751-0dc5-4a60-8a05-d9b5e8e76d72/discovery/v2.0/keys"
+#   entra_oidc_token_url     = "https://login.microsoftonline.com/48d5d751-0dc5-4a60-8a05-d9b5e8e76d72/oauth2/v2.0/token"
+#   entra_oidc_userinfo_url  = "https://login.microsoftonline.com/48d5d751-0dc5-4a60-8a05-d9b5e8e76d72/oauth2/v2.0/userinfo"
+# }
+
+# Microsoft Entra ID API app registration settings
+auth_entra_conf = {
+  tenant_id    = "48d5d751-0dc5-4a60-8a05-d9b5e8e76d72"
+  api_audience = "da5a8d88-2e56-462e-b8d7-a5889de99c54" # gitleaks:allow
+  api_scope    = "access_as_user"
 }
